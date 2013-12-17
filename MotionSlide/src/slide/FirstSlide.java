@@ -13,10 +13,14 @@ import br.com.etyllica.layer.TextLayer;
 
 public class FirstSlide extends Application{
 
-	TextLayer text;
+	private TextLayer text;
 	
-	String title = "I was wondering...";
+	private String title = "I was wondering...";
 	
+	private TextLayer anotherText;
+	
+	private String anotherSentence = "I was wondering...";
+		
 	public FirstSlide(int w, int h) {
 		super(w, h);
 	}
@@ -26,16 +30,21 @@ public class FirstSlide extends Application{
 		
 		loading = 10;
 
-		text = new TextLayer(20, 50, title);		
+		text = new TextLayer(20, 50, title);
 		
 		FadeInAnimation fadeIn = new FadeInAnimation(2000);
 		
 		fadeIn.setTarget(text);
 		
 		this.scene.addAnimation(fadeIn);
+				
+		anotherText = new TextLayer(20, 80, anotherSentence);
 		
+		FadeInAnimation anotherFadeIn = new FadeInAnimation(2000, 2000);
 		
+		anotherFadeIn.setTarget(anotherText);
 		
+		this.scene.addAnimation(anotherFadeIn);
 		
 		loading = 100;
 		
@@ -46,8 +55,9 @@ public class FirstSlide extends Application{
 		g.setColor(Color.BLUE);		
 		g.fillRect(x, y, w, h);
 		
-		g.setColor(Color.WHITE);
 		text.draw(g);
+		
+		anotherText.draw(g);
 	}
 	
 
