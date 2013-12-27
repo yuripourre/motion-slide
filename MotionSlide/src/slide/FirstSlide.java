@@ -2,6 +2,8 @@ package slide;
 
 
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.List;
 
 import br.com.etyllica.animation.scripts.FadeInAnimation;
 import br.com.etyllica.core.application.Application;
@@ -13,40 +15,53 @@ import br.com.etyllica.layer.TextLayer;
 
 public class FirstSlide extends Application{
 
-	private TextLayer text;
+	private List<TextLayer> textList = new ArrayList<TextLayer>();
 	
-	private String title = "I was wondering...";
+	private int texts = 0;
 	
-	private TextLayer anotherText;
-	
-	private String anotherSentence = "I was wondering...";
-		
 	public FirstSlide(int w, int h) {
 		super(w, h);
 	}
+	
+	
 	
 	@Override
 	public void load() {
 		
 		loading = 10;
 
-		text = new TextLayer(20, 50, title);
-		
-		FadeInAnimation fadeIn = new FadeInAnimation(2000);
-		
-		fadeIn.setTarget(text);
-		
-		this.scene.addAnimation(fadeIn);
+		createText("I was wondering...");
 				
-		anotherText = new TextLayer(20, 80, anotherSentence);
+		createText("If there is a way");
 		
-		FadeInAnimation anotherFadeIn = new FadeInAnimation(2000, 2000);
-		
-		anotherFadeIn.setTarget(anotherText);
-		
-		this.scene.addAnimation(anotherFadeIn);
+		createText("To make things funnier");
 		
 		loading = 100;
+		
+	}
+	
+	private void createText(String text){
+		
+		int x = 120;
+		int y = 50;
+		
+		int offsetY = 30;
+		
+		final int animationDelay = 2000;
+		
+		final int animationTime = 3000;
+		
+		TextLayer textLayer = new TextLayer(x, y+offsetY*texts, text);
+		
+		FadeInAnimation fadeIn = new FadeInAnimation(animationDelay*texts, animationTime);
+		
+		fadeIn.setTarget(textLayer);
+		
+		this.scene.addAnimation(fadeIn);
+		
+		texts++;
+		
+		textList.add(textLayer);		
 		
 	}
 
@@ -55,9 +70,10 @@ public class FirstSlide extends Application{
 		g.setColor(Color.BLUE);		
 		g.fillRect(x, y, w, h);
 		
-		text.draw(g);
+		for(TextLayer text: textList){
+			text.draw(g);	
+		}
 		
-		anotherText.draw(g);
 	}
 	
 
