@@ -1,9 +1,10 @@
 
 
 import slide.FirstSlide;
-import br.com.etyllica.Etyllica;
+import slide.MathSlide;
+import br.com.etyllica.EtyllicaFrame;
 
-public class MotionSlide extends Etyllica {
+public class MotionSlide extends EtyllicaFrame {
 
 	private static final long serialVersionUID = 1L;
 
@@ -11,10 +12,16 @@ public class MotionSlide extends Etyllica {
 		super(640, 480);
 	}
 	
+	public static void main(String[] args){
+		MotionSlide slide = new MotionSlide();
+		slide.init();
+	}
+	
 	@Override
 	public void startGame() {
 		
-		setMainApplication(new FirstSlide(w,h));
+		//setMainApplication(new FirstSlide(w,h));
+		setMainApplication(new MathSlide(w,h));
 		
 	}
 	
