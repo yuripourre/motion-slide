@@ -1,6 +1,7 @@
 
 
 import slide.FirstSlide;
+import slide.MapSlide;
 import slide.MathSlide;
 import br.com.etyllica.EtyllicaFrame;
 
@@ -21,7 +22,8 @@ public class MotionSlide extends EtyllicaFrame {
 	public void startGame() {
 		
 		//setMainApplication(new FirstSlide(w,h));
-		setMainApplication(new MathSlide(w,h));
+		//setMainApplication(new MathSlide(w,h));
+		setMainApplication(new MapSlide(w,h));
 		
 	}
 	
