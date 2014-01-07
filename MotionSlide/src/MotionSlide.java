@@ -10,11 +10,12 @@ public class MotionSlide extends EtyllicaFrame {
 	private static final long serialVersionUID = 1L;
 
 	public MotionSlide() {
-		super(640, 480);
+		super(960, 540);
 	}
 	
 	public static void main(String[] args){
 		MotionSlide slide = new MotionSlide();
+		//slide.setUndecorated(true);
 		slide.init();
 	}
 	
@@ -22,8 +23,8 @@ public class MotionSlide extends EtyllicaFrame {
 	public void startGame() {
 		
 		//setMainApplication(new FirstSlide(w,h));
-		//setMainApplication(new MathSlide(w,h));
-		setMainApplication(new MapSlide(w,h));
+		setMainApplication(new MathSlide(w,h));
+		//setMainApplication(new MapSlide(w,h));
 		
 	}
 	
