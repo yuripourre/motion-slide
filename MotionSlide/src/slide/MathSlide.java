@@ -2,7 +2,6 @@ package slide;
 
 
 import java.awt.Color;
-import java.awt.Font;
 
 import br.com.etyllica.animation.AnimationScript;
 import br.com.etyllica.animation.scripts.FadeOutAnimation;
@@ -14,7 +13,6 @@ import br.com.etyllica.gui.Button;
 import br.com.etyllica.gui.label.TextLabel;
 import br.com.etyllica.layer.ImageLayer;
 import br.com.etyllica.layer.TextLayer;
-import br.com.etyllica.core.loader.FontLoader;
 
 public class MathSlide extends SlideApplication{
 	
@@ -129,6 +127,10 @@ public class MathSlide extends SlideApplication{
 	
 	@Override
 	public GUIEvent updateKeyboard(KeyEvent event) {
+		
+		if(event.isKeyDown(KeyEvent.TSK_SETA_DIREITA)){
+			returnApplication = new MapSlide(w, h);
+		}
 		
 		return null;
 	}
