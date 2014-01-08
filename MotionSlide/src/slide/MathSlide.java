@@ -14,6 +14,7 @@ import br.com.etyllica.gui.Button;
 import br.com.etyllica.gui.label.TextLabel;
 import br.com.etyllica.layer.ImageLayer;
 import br.com.etyllica.layer.TextLayer;
+import br.com.etyllica.core.loader.FontLoader;
 
 public class MathSlide extends SlideApplication{
 	
@@ -45,10 +46,11 @@ public class MathSlide extends SlideApplication{
 		int margin = 86;
 		
 		mathText = new TextLayer(margin, 80, "1+1=2");
-		mathText.setSize(22f);
+		mathText.setSize(32f);
 		mathText.setColor(Color.BLACK);
-		
-		loading = 22;
+		mathText.setFontName("Calligraserif.ttf");
+				
+		loading = 30;
 				
 		AnimationScript fadeIn = createText("Things like Math");
 		
