@@ -3,6 +3,7 @@ package slide;
 
 import java.awt.Color;
 
+import slide.capture.SkelAnimation;
 import slide.tvroom.TelevisionUI;
 import br.com.etyllica.core.event.GUIEvent;
 import br.com.etyllica.core.event.KeyEvent;
@@ -25,6 +26,8 @@ public class TvRoomSlide extends SlideApplication{
 		
 	public TvRoomSlide(int w, int h) {
 		super(w, h);
+		
+		tv = new TelevisionUI(w, h);
 	}
 	
 	@Override
@@ -35,16 +38,15 @@ public class TvRoomSlide extends SlideApplication{
 		background = new ImageLayer("tvroom/living-room-tnlozkiz.jpg");		
 		
 		light = new ImageLayer(174, 97, "tvroom/light.png");
-		
-		tv = new TelevisionUI();
-		
+				
 		loading = 100;
 		
 	}
 
 	@Override
 	public void draw(Graphic g) {
-		g.setColor(Color.WHITE);		
+		
+		g.setColor(Color.WHITE);
 		g.fillRect(x, y, w, h);
 		
 		for(TextLayer text: textList){
@@ -64,6 +66,11 @@ public class TvRoomSlide extends SlideApplication{
 	@Override
 	public void update(long now){
 		
+		if(mx>w/2){
+			
+			tv.setVolume(15-((my*15)/h));
+		}
+		
 	}
 	
 	@Override
@@ -82,6 +89,10 @@ public class TvRoomSlide extends SlideApplication{
 						
 			activate = !activate;
 			
+		}
+		
+		if(event.isKeyDown(KeyEvent.TSK_SETA_DIREITA)){
+			returnApplication = new SkelAnimation(w, h);
 		}
 				
 		return null;

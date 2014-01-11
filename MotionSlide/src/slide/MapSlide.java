@@ -130,6 +130,10 @@ public class MapSlide extends SlideApplication{
 	@Override
 	public GUIEvent updateKeyboard(KeyEvent event) {
 		
+		if(event.isKeyDown(KeyEvent.TSK_SETA_DIREITA)){
+			returnApplication = new TvRoomSlide(w, h);
+		}
+		
 		return null;
 	}
 	

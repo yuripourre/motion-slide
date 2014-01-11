@@ -20,16 +20,23 @@ public abstract class SlideApplication extends Application{
 	
 	protected AnimationScript createText(String text){
 		
-		int x = 120;
-		int y = 50;
+		float fontSize = 30;
 		
-		int offsetY = 30;
+		int x = 120;
+		
+		int y = 80;
+		
+		int offsetY = 50;
 		
 		final int animationDelay = 2000;
 		
 		final int animationTime = 3000;
 		
 		TextLayer textLayer = new TextLayer(x, y+offsetY*texts, text);
+		
+		textLayer.setBorder(true);
+		
+		textLayer.setSize(fontSize);
 		
 		FadeInAnimation fadeIn = new FadeInAnimation(animationDelay*texts, animationTime);
 		
