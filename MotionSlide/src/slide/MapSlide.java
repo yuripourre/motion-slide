@@ -3,6 +3,7 @@ package slide;
 
 import java.awt.Color;
 
+import slide.geography.Continent;
 import br.com.etyllica.core.event.GUIEvent;
 import br.com.etyllica.core.event.KeyEvent;
 import br.com.etyllica.core.event.PointerEvent;
@@ -15,19 +16,19 @@ public class MapSlide extends SlideApplication{
 	
 	private ImageLayer map;
 	
-	private BufferedLayer africa;
+	private Continent africa;
 	
-	private BufferedLayer antarctica;
+	private Continent antarctica;
 	
-	private BufferedLayer australia;
+	private Continent australia;
 	
-	private BufferedLayer asia;
+	private Continent asia;
 	
-	private BufferedLayer europa;
+	private Continent europe;
 	
-	private BufferedLayer northAmerica;
+	private Continent northAmerica;
 	
-	private BufferedLayer southAmerica;
+	private Continent southAmerica;
 	
 	private int mx = 0, my = 0;
 		
@@ -44,19 +45,21 @@ public class MapSlide extends SlideApplication{
 		map.centralizeX(0, w);
 		map.centralizeY(0, h);
 		
-		southAmerica = new BufferedLayer(map.getX()+142, map.getY()+133, "geo/south_america.png");
+		southAmerica = new Continent("South America", new BufferedLayer(map.getX()+142, map.getY()+133, "geo/south_america.png"));
 		
-		northAmerica = new BufferedLayer(map.getX()+59, map.getY()+6, "geo/north_america.png");
+		northAmerica = new Continent("North America", new BufferedLayer(map.getX()+59, map.getY()+6, "geo/north_america.png"));
 		
-		africa = new BufferedLayer(map.getX()+248, map.getY()+84, "geo/africa.png");
+		africa = new Continent("Africa", new BufferedLayer(map.getX()+248, map.getY()+84, "geo/africa.png"));
 		
-		antarctica = new BufferedLayer(map.getX()+113, map.getY()+274, "geo/antarctica.png");
+		antarctica = new Continent("Antarctica", new BufferedLayer(map.getX()+113, map.getY()+274, "geo/antarctica.png"));
 		
-		australia = new BufferedLayer(map.getX()+457, map.getY()+160, "geo/australia.png");
+		australia = new Continent("Australia", new BufferedLayer(map.getX()+457, map.getY()+160, "geo/australia.png"));
 		
-		asia = new BufferedLayer(map.getX()+315, map.getY()+12, "geo/asia.png");
+		asia = new Continent("Asia", new BufferedLayer(map.getX()+315, map.getY()+12, "geo/asia.png"));
 		
-		europa = new BufferedLayer(map.getX()+248, map.getY()+10, "geo/europa.png");
+		europe = new Continent("Europe", new BufferedLayer(map.getX()+248, map.getY()+10, "geo/europe.png"));
+		
+		createText("Things like Geography...");
 		
 		loading = 100;
 		
@@ -68,7 +71,7 @@ public class MapSlide extends SlideApplication{
 		g.fillRect(x, y, w, h);
 		
 		for(TextLayer text: textList){
-			text.draw(g);	
+			text.draw(g);
 		}
 		
 		map.draw(g);
@@ -81,7 +84,7 @@ public class MapSlide extends SlideApplication{
 		
 		asia.draw(g);
 		
-		europa.draw(g);
+		europe.draw(g);
 		
 		northAmerica.draw(g);
 		
@@ -92,30 +95,20 @@ public class MapSlide extends SlideApplication{
 	@Override
 	public void update(long now){
 	
-		verifyColision(africa);
+		africa.verifyColision(mx, my);
 		
-		verifyColision(antarctica);
+		antarctica.verifyColision(mx, my);
 		
-		verifyColision(australia);
+		australia.verifyColision(mx, my);
 		
-		verifyColision(asia);
+		asia.verifyColision(mx, my);
 		
-		verifyColision(europa);
+		europe.verifyColision(mx, my);
 		
-		verifyColision(southAmerica);
+		southAmerica.verifyColision(mx, my);
 		
-		verifyColision(northAmerica);
-		
-	}
-	
-	private void verifyColision(BufferedLayer layer){
-		
-		if(layer.colideAlphaPoint(mx, my)){
-			layer.offsetRGB(-80, 80, -70);
-		}else{
-			layer.resetImage();
-		}
-		
+		northAmerica.verifyColision(mx, my);
+
 	}
 	
 	@Override
