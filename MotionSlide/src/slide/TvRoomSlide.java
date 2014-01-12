@@ -69,6 +69,11 @@ public class TvRoomSlide extends SlideApplication{
 		if(mx>w/2){
 			
 			tv.setVolume(15-((my*15)/h));
+			
+		}else{
+			
+			light.setOpacity(255-(my*255)/h);
+			
 		}
 		
 	}
