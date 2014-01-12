@@ -34,10 +34,12 @@ public class TvRoomSlide extends SlideApplication{
 	public void load() {
 		
 		loading = 10;
-		
+				
 		background = new ImageLayer("tvroom/living-room-tnlozkiz.jpg");		
 		
 		light = new ImageLayer(174, 97, "tvroom/light.png");
+		
+		createText("Things like control your house...");
 				
 		loading = 100;
 		
@@ -48,11 +50,7 @@ public class TvRoomSlide extends SlideApplication{
 		
 		g.setColor(Color.WHITE);
 		g.fillRect(x, y, w, h);
-		
-		for(TextLayer text: textList){
-			text.draw(g);	
-		}
-		
+				
 		background.draw(g);
 		
 		if(activate){
@@ -60,7 +58,9 @@ public class TvRoomSlide extends SlideApplication{
 		}
 		
 		tv.draw(g);
-
+		
+		super.draw(g);
+		
 	}
 
 	@Override

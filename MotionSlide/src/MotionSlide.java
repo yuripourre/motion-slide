@@ -2,10 +2,10 @@
 
 import slide.FirstSlide;
 import slide.LastSlide;
-import slide.MapSlide;
 import slide.MathSlide;
 import slide.TvRoomSlide;
 import slide.capture.SkelAnimation;
+import slide.geography.GeographySlide;
 import br.com.etyllica.EtyllicaFrame;
 import br.com.luvia.loader.MeshLoader;
 

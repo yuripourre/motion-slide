@@ -2,7 +2,10 @@ package slide;
 
 
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.List;
 
+import slide.geography.GeographySlide;
 import br.com.etyllica.animation.AnimationScript;
 import br.com.etyllica.animation.scripts.FadeOutAnimation;
 import br.com.etyllica.core.event.GUIEvent;
@@ -16,8 +19,8 @@ import br.com.etyllica.layer.TextLayer;
 
 public class MathSlide extends SlideApplication{
 	
-	private TextLayer mathText;
-	
+	private List<TextLayer> mathTexts = new ArrayList<TextLayer>();
+		
 	private ImageLayer background;
 	
 	private Button addition;
@@ -41,13 +44,10 @@ public class MathSlide extends SlideApplication{
 		
 		background = new ImageLayer("math/notebook-paper.jpg");
 		
-		int margin = 86;
+		createLine("1-1=2");
 		
-		mathText = new TextLayer(margin, 80, "1+1=2");
-		mathText.setSize(32f);
-		mathText.setColor(Color.BLACK);
-		mathText.setFontName("Calligraserif.ttf");
-				
+		createLine("15x4=60");
+		
 		loading = 30;
 				
 		AnimationScript fadeIn = createText("Things like Math");
@@ -61,6 +61,25 @@ public class MathSlide extends SlideApplication{
 		createButtons();
 				
 		loading = 100;
+		
+	}
+	
+	private TextLayer createLine(String text){
+		
+		final int margin = 86;
+		
+		final int offsetY = 82;
+		
+		final int spacing = 24;
+		
+		TextLayer mathText = new TextLayer(margin, offsetY+spacing*mathTexts.size(), text);
+		mathText.setSize(28f);
+		mathText.setColor(Color.BLACK);
+		mathText.setFontName("Calligraserif.ttf");
+		
+		mathTexts.add(mathText);
+		
+		return mathText;
 		
 	}
 	
@@ -110,11 +129,11 @@ public class MathSlide extends SlideApplication{
 		
 		background.draw(g);
 		
-		mathText.draw(g);		
-		
-		for(TextLayer text: textList){
-			text.draw(g);	
+		for(TextLayer mathText: mathTexts){
+			mathText.draw(g);	
 		}
+		
+		super.draw(g);
 		
 	}
 	
@@ -129,7 +148,7 @@ public class MathSlide extends SlideApplication{
 	public GUIEvent updateKeyboard(KeyEvent event) {
 		
 		if(event.isKeyDown(KeyEvent.TSK_SETA_DIREITA)){
-			returnApplication = new MapSlide(w, h);
+			returnApplication = new GeographySlide(w, h);
 		}
 		
 		return null;

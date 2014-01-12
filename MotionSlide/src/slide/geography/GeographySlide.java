@@ -1,9 +1,10 @@
-package slide;
+package slide.geography;
 
 
 import java.awt.Color;
 
-import slide.geography.Continent;
+import slide.SlideApplication;
+import slide.TvRoomSlide;
 import br.com.etyllica.core.event.GUIEvent;
 import br.com.etyllica.core.event.KeyEvent;
 import br.com.etyllica.core.event.PointerEvent;
@@ -12,7 +13,7 @@ import br.com.etyllica.layer.BufferedLayer;
 import br.com.etyllica.layer.ImageLayer;
 import br.com.etyllica.layer.TextLayer;
 
-public class MapSlide extends SlideApplication{
+public class GeographySlide extends SlideApplication{
 	
 	private ImageLayer map;
 	
@@ -32,7 +33,7 @@ public class MapSlide extends SlideApplication{
 	
 	private int mx = 0, my = 0;
 		
-	public MapSlide(int w, int h) {
+	public GeographySlide(int w, int h) {
 		super(w, h);
 	}
 	
@@ -67,13 +68,9 @@ public class MapSlide extends SlideApplication{
 
 	@Override
 	public void draw(Graphic g) {
-		g.setColor(Color.WHITE);		
+		g.setColor(Color.WHITE);
 		g.fillRect(x, y, w, h);
-		
-		for(TextLayer text: textList){
-			text.draw(g);
-		}
-		
+				
 		map.draw(g);
 		
 		africa.draw(g);
@@ -90,6 +87,7 @@ public class MapSlide extends SlideApplication{
 		
 		southAmerica.draw(g);
 		
+		super.draw(g);
 	}
 
 	@Override

@@ -6,6 +6,7 @@ import java.util.List;
 import br.com.etyllica.animation.AnimationScript;
 import br.com.etyllica.animation.scripts.FadeInAnimation;
 import br.com.etyllica.context.Application;
+import br.com.etyllica.core.video.Graphic;
 import br.com.etyllica.layer.TextLayer;
 
 public abstract class SlideApplication extends Application{
@@ -22,7 +23,7 @@ public abstract class SlideApplication extends Application{
 		
 		float fontSize = 30;
 		
-		int x = 120;
+		int x = 0;
 		
 		int y = 80;
 		
@@ -32,7 +33,9 @@ public abstract class SlideApplication extends Application{
 		
 		final int animationTime = 3000;
 		
-		TextLayer textLayer = new TextLayer(x, y+offsetY*texts, text);
+		TextLayer textLayer = new TextLayer(0, y+offsetY*texts, text);
+		
+		textLayer.centralizeX(-w/6, w);
 		
 		textLayer.setBorder(true);
 		
@@ -51,5 +54,13 @@ public abstract class SlideApplication extends Application{
 		return fadeIn;
 		
 	}
+	
+	public void draw(Graphic g){
+
+		for(TextLayer text: textList){
+			text.draw(g);	
+		}
+		
+	}	
 	
 }
