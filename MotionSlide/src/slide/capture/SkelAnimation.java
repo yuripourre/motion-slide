@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import slide.pong.PongApplication;
 import br.com.eanimator.rigging.Armature;
 import br.com.etyllica.core.event.GUIEvent;
 import br.com.etyllica.core.event.KeyEvent;
@@ -25,10 +26,7 @@ public class SkelAnimation extends Application3D{
 		super(w,h);
 	}
 
-	private List<Bone> bones = new ArrayList<Bone>();
-
 	private Model3D model;
-	private boolean hideModel = false;
 
 	private double sceneAngleY = 0;
 	private double sceneAngleX = 0;
@@ -73,14 +71,10 @@ public class SkelAnimation extends Application3D{
 		glLoadIdentity();
 
 		loading = 88;
-		//glTranslatef (0.0f, 0.0f, -5.0f);
 
-		//Load Model (http://thefree3dmodels.com/stuff/characters/male_asian_warrior/14-1-0-4187)
 		model = MeshLoader.getInstance().loadModel("oriental/oriental.obj");
 
 		loading = 90;
-
-		System.out.println("Model has "+model.getVertexes().size()+" vertexes.");
 
 		model.setColor(new Color(0x33,0x33,0x33));
 
@@ -90,7 +84,6 @@ public class SkelAnimation extends Application3D{
 
 		loading = 91;
 
-		//model.setX(0.6);
 		model.setY(-1);
 		model.setZ(-5);
 
@@ -101,40 +94,9 @@ public class SkelAnimation extends Application3D{
 		loading = 96;
 		
 		armature = new Armature(model);
-	
-		assignBones(armature);
 
 		loading = 100;
 	}
-	
-	private void assignBones(Armature armature){
-		
-		bones.add(armature.getNeck());
-		bones.add(armature.getUpperSpine());
-
-		bones.add(armature.getLowerSpine());
-
-		bones.add(armature.getLeftShoulder());
-		bones.add(armature.getLeftArm());
-		bones.add(armature.getLeftForeArm());
-		bones.add(armature.getLeftHand());
-
-		bones.add(armature.getRightShoulder());
-		bones.add(armature.getRightArm());
-		bones.add(armature.getRightForeArm());
-		bones.add(armature.getRightHand());
-
-		bones.add(armature.getLeftHip());
-		bones.add(armature.getLeftLeg());
-		bones.add(armature.getLeftThigh());
-		bones.add(armature.getLeftFoot());
-
-		bones.add(armature.getRightHip());
-		bones.add(armature.getRightLeg());
-		bones.add(armature.getRightThigh());
-		bones.add(armature.getRightFoot());
-
-	}	
 
 	public void updateSelection(){
 
@@ -160,8 +122,8 @@ public class SkelAnimation extends Application3D{
 	public GUIEvent updateKeyboard(KeyEvent event) {
 
 		if(event.isKeyDown(KeyEvent.TSK_RIGHT_ARROW)){
-			
-		}		
+			returnApplication = new PongApplication(w, h);
+		}
 
 		if(event.isKeyDown(KeyEvent.TSK_ESPACO)){
 
@@ -182,16 +144,12 @@ public class SkelAnimation extends Application3D{
 			sceneAngleY+=4;
 		}
 
-		//glClear(GL_COLOR_BUFFER_BIT);
+
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		glLoadIdentity();
 
 		glColor3f(1.0f, 1.0f, 1.0f);
-
-		/*glDisable(GL.GL_DEPTH_TEST);
-		glDisable(GL.GL_TEXTURE_2D);
-		glDisable(GL.GL_CULL_FACE);*/
 
 		//Scene Translate 
 		glTranslated(model.getX(), model.getY(), model.getZ());
@@ -200,11 +158,8 @@ public class SkelAnimation extends Application3D{
 		glRotated(sceneAngleY, 0, 1, 0);
 
 		glScaled(zoomFactor, zoomFactor, zoomFactor);
-		//armature.getChestJoint().draw(this);
 
-		if(!hideModel){
-			model.draw(this);
-		}
+		model.draw(this);		
 
 		glFlush(g);
 	}
