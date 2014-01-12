@@ -7,9 +7,12 @@ import br.com.etyllica.core.event.GUIEvent;
 import br.com.etyllica.core.event.KeyEvent;
 import br.com.etyllica.core.event.PointerEvent;
 import br.com.etyllica.core.video.Graphic;
+import br.com.etyllica.layer.ImageLayer;
 import br.com.etyllica.layer.TextLayer;
 
 public class FirstSlide extends SlideApplication{
+	
+	private ImageLayer background; 
 	
 	public FirstSlide(int w, int h) {
 		super(w, h);
@@ -20,6 +23,8 @@ public class FirstSlide extends SlideApplication{
 		
 		loading = 10;
 
+		background = new ImageLayer("bg.png");
+		
 		createText("I was wondering...");
 				
 		createText("If there is a way");
@@ -32,8 +37,8 @@ public class FirstSlide extends SlideApplication{
 
 	@Override
 	public void draw(Graphic g) {
-		g.setColor(Color.BLUE);		
-		g.fillRect(x, y, w, h);
+		
+		background.draw(g);
 		
 		for(TextLayer text: textList){
 			text.draw(g);	
