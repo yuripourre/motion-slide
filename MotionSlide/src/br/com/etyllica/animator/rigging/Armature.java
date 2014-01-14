@@ -1,4 +1,4 @@
-package br.com.eanimator.rigging;
+package br.com.etyllica.animator.rigging;
 
 import java.util.ArrayList;
 import java.util.List;

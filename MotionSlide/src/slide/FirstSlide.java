@@ -19,6 +19,8 @@ public class FirstSlide extends SlideApplication{
 	@Override
 	public void load() {
 		
+		super.load();
+		
 		loading = 10;
 
 		background = new ImageLayer("bg.png");
@@ -37,6 +39,8 @@ public class FirstSlide extends SlideApplication{
 	public void draw(Graphic g) {
 		
 		background.draw(g);
+		
+		drawCamera(g);
 		
 		for(TextLayer text: textList){
 			text.draw(g);	

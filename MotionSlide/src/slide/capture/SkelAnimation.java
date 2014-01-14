@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import slide.pong.PongApplication;
-import br.com.eanimator.rigging.Armature;
+import br.com.etyllica.animator.rigging.Armature;
 import br.com.etyllica.core.event.GUIEvent;
 import br.com.etyllica.core.event.KeyEvent;
 import br.com.etyllica.core.event.PointerEvent;
