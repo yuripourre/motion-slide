@@ -1,6 +1,7 @@
 package slide;
 
 
+import slide.capture.SkelAnimation;
 import br.com.etyllica.core.event.GUIEvent;
 import br.com.etyllica.core.event.KeyEvent;
 import br.com.etyllica.core.event.PointerEvent;
@@ -51,15 +52,16 @@ public class FirstSlide extends SlideApplication{
 
 	@Override
 	public GUIEvent updateMouse(PointerEvent event) {
-		// TODO Auto-generated method stub
-		return null;
+
+		return super.updateMouse(event);
 	}
 	
 	@Override
 	public GUIEvent updateKeyboard(KeyEvent event) {
 		
 		if(event.isKeyDown(KeyEvent.TSK_RIGHT_ARROW)){
-			returnApplication = new MathSlide(w, h);
+			//returnApplication = new MathSlide(w, h);
+			returnApplication = new SkelAnimation(w, h);
 		}
 		
 		return null;

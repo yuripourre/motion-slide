@@ -27,11 +27,13 @@ public class MotionSlide extends EtyllicaFrame {
 	@Override
 	public void startGame() {
 		
-		setMainApplication(new FirstSlide(w,h));
+		//setMainApplication(new FirstSlide(w,h));
 		//setMainApplication(new MathSlide(w,h));
 		//setMainApplication(new MapSlide(w,h));
 		//setMainApplication(new TvRoomSlide(w,h));
-		//setMainApplication(new SkelAnimation(w,h));
+		
+		setMainApplication(new SkelAnimation(w,h));
+		
 		//setMainApplication(new LastSlide(w,h));
 		
 		//Math Background: http://www.iwallscreen.com/stock/engineering-graph-sheets-crumpled-notebook-paper.jpg

@@ -17,10 +17,14 @@ import br.com.etyllica.core.video.Graphic;
 import br.com.etyllica.layer.BufferedLayer;
 import br.com.etyllica.layer.TextLayer;
 import br.com.etyllica.linear.Point2D;
-import br.com.etyllica.motion.core.ColorFilter;
+import br.com.etyllica.motion.features.BoundingComponent;
 import br.com.etyllica.motion.features.Component;
+import br.com.etyllica.motion.filter.color.ColorFilter;
+import br.com.etyllica.motion.filter.color.LeftColorFilter;
+import br.com.etyllica.motion.filter.color.RightColorFilter;
+import br.com.luvia.Application3D;
 
-public abstract class SlideApplication extends Application{
+public abstract class SlideApplication extends Application3D{
 
 	public SlideApplication(int w, int h) {
 		super(w, h);
@@ -32,60 +36,101 @@ public abstract class SlideApplication extends Application{
 
 	private Camera cam;
 
-	private ColorFilter colorFilter;
+	private BufferedLayer bufferedLayer;
+	
+	private BufferedImage mirror = null;
 
-	private BufferedLayer mirror;
+	private Component screen = new BoundingComponent(0, 0, w, h);
+	
+	private LeftColorFilter leftColorFilter;
+	
+	private RightColorFilter rightColorFilter;
 
-	private Component screen = new Component(w, h);
-
-	private Point2D point;
+	protected Point2D leftPoint;
+	
+	protected Point2D rightPoint;
 
 	@Override
 	public void load() {
 
+		glViewport (0, 0, w, h);
+		
 		loadingPhrase = "Opening Camera";
 
-		cam = new CameraV4L4J(0);
+		if(sessionMap.get("CAMERA")==null){
+			cam = new CameraV4L4J(0);
+			this.sessionMap.put("CAMERA", cam);
+		}
 
 		loadingPhrase = "Setting Filter";
 
-		colorFilter = new ColorFilter();
-		colorFilter.setBorder(20);
-		colorFilter.setTolerance(20);
+		final int border = 10;
+		
+		final int tolerance = 40;
+		
+		final int color = new Color(106, 64, 52).getRGB();
+		
+		leftColorFilter = new LeftColorFilter();
+		leftColorFilter.setBorder(border);
+		leftColorFilter.setTolerance(tolerance);
+		leftColorFilter.setColor(color);
+		
+		leftPoint = leftColorFilter.getLastPoint();
 
-		mirror = new BufferedLayer(0, 0);
+		rightColorFilter = new RightColorFilter();
+		rightColorFilter.setBorder(border);
+		rightColorFilter.setTolerance(tolerance);
+		rightColorFilter.setColor(color);
+		
+		rightPoint = rightColorFilter.getLastPoint();
 
+		bufferedLayer = new BufferedLayer(0, 0);
+
+		updateAtFixedRate(5);
+		
 		loading = 5;
 	}
 
-	BufferedImage old = null;
-
 	@Override
-	public void update(long now){
-
+	public void timeUpdate(long now){
 		//Get the Camera image
-		mirror.setBuffer(cam.getBufferedImage());
+		bufferedLayer.setBuffer(cam.getBufferedImage());
 
 		//Normally the camera shows the image flipped, but we want to see something like a mirror
 		//So we flip the image
-		mirror.flipHorizontal();
+		bufferedLayer.flipHorizontal();
 		
-		mirror.resize(w, h);
+		bufferedLayer.resize(w, h);
+				
+		mirror = bufferedLayer.getModifiedBuffer();
 		
 		//Now we search for the first pixel with the desired color in the whole screen
-		point = colorFilter.filterFirst(mirror.getModifiedBuffer(), screen);
-
-		old = mirror.getModifiedBuffer();
+		leftPoint = leftColorFilter.filterFirst(mirror, screen);
+		
+		rightPoint = rightColorFilter.filterFirst(mirror, screen);	
 
 	}
 
 	@Override
 	public GUIEvent updateMouse(PointerEvent event) {
 
-		if(event.onButtonDown(MouseButton.MOUSE_BUTTON_LEFT)){
-			//When mouse clicks with LeftButton, the color filter tries to find
-			//the color we are clicking on
-			colorFilter.setColor(mirror.getModifiedBuffer().getRGB((int)event.getX(), (int)event.getY()));
+		//When mouse clicks, the color filter tries to find
+		//the color we are clicking on
+		
+		if(event.onButtonDown(MouseButton.MOUSE_BUTTON_LEFT)){	
+			
+			Color color = new Color(mirror.getRGB((int)event.getX(), (int)event.getY()));
+			
+			System.out.println("Red: "+color.getRed());
+			System.out.println("Green: "+color.getGreen());
+			System.out.println("Blue: "+color.getBlue());
+			
+			leftColorFilter.setColor(mirror.getRGB((int)event.getX(), (int)event.getY()));
+			
+		}else if(event.onButtonDown(MouseButton.MOUSE_BUTTON_RIGHT)){
+			
+			rightColorFilter.setColor(mirror.getRGB((int)event.getX(), (int)event.getY()));
+			
 		}
 
 		return GUIEvent.NONE;
@@ -137,20 +182,21 @@ public abstract class SlideApplication extends Application{
 
 	protected void drawCamera(Graphic g) {
 
-		if(old==null){
+		if(mirror==null){
 			return;
 		}
 
 		g.setAlpha(80);
 
 		//Draw the mirror image
-		g.drawImage(old,0,0);
+		g.drawImage(mirror, 0, 0);
 
 		//Set a Color to our Point
 		g.setColor(Color.CYAN);
-
-		//Draw our tracking point with radius = 10 pixels
-		g.fillCircle((int)point.getX(), (int)point.getY(), 10);
+		g.fillCircle((int)leftPoint.getX(), (int)leftPoint.getY(), 10);
+		
+		g.setColor(Color.RED);
+		g.fillCircle((int)rightPoint.getX(), (int)rightPoint.getY(), 10);
 
 		g.setAlpha(100);
 

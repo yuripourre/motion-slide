@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import slide.SlideApplication;
 import slide.pong.PongApplication;
 import br.com.etyllica.animator.rigging.Armature;
 import br.com.etyllica.core.event.GUIEvent;
@@ -14,13 +15,12 @@ import br.com.etyllica.core.event.PointerEvent;
 import br.com.etyllica.core.video.Graphic;
 import br.com.etyllica.gui.Spinner;
 import br.com.etyllica.linear.Point2D;
-import br.com.luvia.Application3D;
 import br.com.luvia.animation.skeletal.Bone;
 import br.com.luvia.linear.Model3D;
 import br.com.luvia.loader.MeshLoader;
 
 
-public class SkelAnimation extends Application3D{
+public class SkelAnimation extends SlideApplication{
 
 	public SkelAnimation(int w, int h) {
 		super(w,h);
@@ -42,14 +42,14 @@ public class SkelAnimation extends Application3D{
 	
 	private Armature armature;
 
-	private int mx = 0;
-	private int my = 0;
+	//private int mx = 0;
+	//private int my = 0;
 
 	@Override
 	public void load() {
 
-		glViewport (0, 0, w, h);
-		
+		super.load();
+				
 		center = new Point2D(w/2, h/2);
 
 		loading = 20;
@@ -159,7 +159,7 @@ public class SkelAnimation extends Application3D{
 
 		glScaled(zoomFactor, zoomFactor, zoomFactor);
 
-		model.draw(this);		
+		model.draw(this);
 
 		glFlush(g);
 	}
@@ -167,8 +167,10 @@ public class SkelAnimation extends Application3D{
 	@Override
 	public GUIEvent updateMouse(PointerEvent event) {
 		
-		mx = event.getX();
-		my = event.getY();
+		super.updateMouse(event);
+		
+		//mx = event.getX();
+		//my = event.getY();
 						
 		return GUIEvent.NONE;
 	}
@@ -177,19 +179,25 @@ public class SkelAnimation extends Application3D{
 	
 	public void update(long now){
 		
-		if(mx>center.getX()){
+		//Real Animation
+		//rotateLeftArm((int)leftPoint.getX(), (int)leftPoint.getY());
+		//rotateRightArm((int)rightPoint.getX(), (int)rightPoint.getY());
 		
-			rotateBone(armature.getLeftArm(), -90, true);
-			
-		}else{
-			
-			rotateBone(armature.getRightArm(), 90, false);
-			
-		}
-		
+		//Mirrored animation
+		rotateLeftArm((int)rightPoint.getX(), (int)rightPoint.getY());
+		rotateRightArm((int)leftPoint.getX(), (int)leftPoint.getY());
+
+	}
+	
+	private void rotateLeftArm(int mx, int my){
+		rotateBone(armature.getLeftArm(), mx, my, -90, true);
+	}
+	
+	private void rotateRightArm(int mx, int my){
+		rotateBone(armature.getRightArm(), mx, my, 90, false);
 	}
 		
-	private void rotateBone(Bone bone, int offsetAngle, boolean inverted){
+	private void rotateBone(Bone bone, int mx, int my, int offsetAngle, boolean inverted){
 		
 		double y = my;
 		
