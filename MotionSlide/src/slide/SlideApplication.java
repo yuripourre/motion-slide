@@ -7,9 +7,6 @@ import java.util.List;
 
 import br.com.etyllica.animation.AnimationScript;
 import br.com.etyllica.animation.scripts.FadeInAnimation;
-import br.com.etyllica.camera.Camera;
-import br.com.etyllica.camera.CameraV4L4J;
-import br.com.etyllica.context.Application;
 import br.com.etyllica.core.event.GUIEvent;
 import br.com.etyllica.core.event.PointerEvent;
 import br.com.etyllica.core.input.mouse.MouseButton;
@@ -17,11 +14,12 @@ import br.com.etyllica.core.video.Graphic;
 import br.com.etyllica.layer.BufferedLayer;
 import br.com.etyllica.layer.TextLayer;
 import br.com.etyllica.linear.Point2D;
-import br.com.etyllica.motion.features.BoundingComponent;
+import br.com.etyllica.motion.camera.Camera;
+import br.com.etyllica.motion.camera.CameraV4L4J;
 import br.com.etyllica.motion.features.Component;
-import br.com.etyllica.motion.filter.color.ColorFilter;
-import br.com.etyllica.motion.filter.color.LeftColorFilter;
-import br.com.etyllica.motion.filter.color.RightColorFilter;
+import br.com.etyllica.motion.filter.color.ColorStrategy;
+import br.com.etyllica.motion.filter.search.LeftToRightSearch;
+import br.com.etyllica.motion.filter.search.RightToLeftSearch;
 import br.com.luvia.Application3D;
 
 public abstract class SlideApplication extends Application3D{
@@ -40,11 +38,13 @@ public abstract class SlideApplication extends Application3D{
 	
 	private BufferedImage mirror = null;
 
-	private Component screen = new BoundingComponent(0, 0, w, h);
+	private Component screen = new Component(0, 0, w, h);
 	
-	private LeftColorFilter leftColorFilter;
+	private LeftToRightSearch leftColorFilter;
+	private ColorStrategy leftColorStrategy;
 	
-	private RightColorFilter rightColorFilter;
+	private RightToLeftSearch rightColorFilter;
+	private ColorStrategy rightColorStrategy;
 
 	protected Point2D leftPoint;
 	
@@ -66,23 +66,28 @@ public abstract class SlideApplication extends Application3D{
 
 		final int border = 10;
 		
-		final int tolerance = 40;
+		final int tolerance = 16;
 		
-		final int color = new Color(106, 64, 52).getRGB();
+		final Color color = new Color(106, 64, 52);
 		
-		leftColorFilter = new LeftColorFilter();
+		//Setting Left Filter
+		leftColorFilter = new LeftToRightSearch();
 		leftColorFilter.setBorder(border);
-		leftColorFilter.setTolerance(tolerance);
-		leftColorFilter.setColor(color);
 		
-		leftPoint = leftColorFilter.getLastPoint();
+		leftColorStrategy = new ColorStrategy(color, tolerance);
+		
+		leftColorFilter.setColorStrategy(leftColorStrategy);
+		
+		leftPoint = new Point2D(0, 0);
 
-		rightColorFilter = new RightColorFilter();
+		//Setting Right Filter
+		rightColorFilter = new RightToLeftSearch();
 		rightColorFilter.setBorder(border);
-		rightColorFilter.setTolerance(tolerance);
-		rightColorFilter.setColor(color);
 		
-		rightPoint = rightColorFilter.getLastPoint();
+		rightColorStrategy = new ColorStrategy(color, tolerance);
+		rightColorFilter.setColorStrategy(rightColorStrategy);
+		
+		rightPoint = new Point2D(0, 0);
 
 		bufferedLayer = new BufferedLayer(0, 0);
 
@@ -105,9 +110,11 @@ public abstract class SlideApplication extends Application3D{
 		mirror = bufferedLayer.getModifiedBuffer();
 		
 		//Now we search for the first pixel with the desired color in the whole screen
-		leftPoint = leftColorFilter.filterFirst(mirror, screen);
+		Component leftComponent = leftColorFilter.filterFirst(mirror, screen);
+		leftPoint.setLocation(leftComponent.getX(), leftComponent.getY());
 		
-		rightPoint = rightColorFilter.filterFirst(mirror, screen);	
+		Component rightComponent = rightColorFilter.filterFirst(mirror, screen);
+		rightPoint.setLocation(rightComponent.getX(), rightComponent.getY());	
 
 	}
 
@@ -125,11 +132,11 @@ public abstract class SlideApplication extends Application3D{
 			System.out.println("Green: "+color.getGreen());
 			System.out.println("Blue: "+color.getBlue());
 			
-			leftColorFilter.setColor(mirror.getRGB((int)event.getX(), (int)event.getY()));
+			leftColorStrategy.setColor(mirror.getRGB((int)event.getX(), (int)event.getY()));
 			
 		}else if(event.onButtonDown(MouseButton.MOUSE_BUTTON_RIGHT)){
 			
-			rightColorFilter.setColor(mirror.getRGB((int)event.getX(), (int)event.getY()));
+			rightColorStrategy.setColor(mirror.getRGB((int)event.getX(), (int)event.getY()));
 			
 		}
 
@@ -186,11 +193,15 @@ public abstract class SlideApplication extends Application3D{
 			return;
 		}
 
-		g.setAlpha(80);
+		g.setAlpha(50);
 
 		//Draw the mirror image
 		g.drawImage(mirror, 0, 0);
 
+		g.setColor(Color.BLACK);
+		g.drawShadow(10, 60, "Right Point ("+rightPoint.getX()+", "+rightPoint.getY()+")");
+		g.drawShadow(10, 80, "Left Point ("+leftPoint.getX()+", "+leftPoint.getY()+")");
+		
 		//Set a Color to our Point
 		g.setColor(Color.CYAN);
 		g.fillCircle((int)leftPoint.getX(), (int)leftPoint.getY(), 10);

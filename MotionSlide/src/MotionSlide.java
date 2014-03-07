@@ -7,6 +7,7 @@ import slide.TvRoomSlide;
 import slide.capture.SkelAnimation;
 import slide.geography.GeographySlide;
 import br.com.etyllica.EtyllicaFrame;
+import br.com.etyllica.context.Application;
 import br.com.luvia.loader.MeshLoader;
 
 public class MotionSlide extends EtyllicaFrame {
@@ -24,18 +25,18 @@ public class MotionSlide extends EtyllicaFrame {
 		slide.init();
 	}
 	
-	@Override
-	public void startGame() {
+	public Application startApplication() {
 		
-		//setMainApplication(new FirstSlide(w,h));
-		//setMainApplication(new MathSlide(w,h));
-		//setMainApplication(new MapSlide(w,h));
-		//setMainApplication(new TvRoomSlide(w,h));
+		//return new FirstSlide(w,h);
+		//return new MathSlide(w,h);
+		//return new MapSlide(w,h);
+		//return new TvRoomSlide(w,h);
 		
-		setMainApplication(new SkelAnimation(w,h));
+		return new SkelAnimation(w,h);
 		
-		//setMainApplication(new LastSlide(w,h));
+		//setMainApplication(new LastSlide(w,h);
 		
+		//Resources:		
 		//Math Background: http://www.iwallscreen.com/stock/engineering-graph-sheets-crumpled-notebook-paper.jpg
 		//TV Room: http://home-improvement-review.com/wp-content/uploads/2013/12/living-room-ideas-with-tv-on-wallothers-tv-wall-mounting-ideas-modern-living-room-tv-wall-mount-tnlozkiz.jpg
 	}
