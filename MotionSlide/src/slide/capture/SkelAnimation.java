@@ -162,6 +162,8 @@ public class SkelAnimation extends SlideApplication{
 		model.draw(this);
 
 		glFlush(g);
+		
+		drawCamera(g);
 	}
 		
 	@Override
@@ -177,7 +179,10 @@ public class SkelAnimation extends SlideApplication{
 	
 	private double dinAngle = 0;
 	
-	public void update(long now){
+	//public void update(long now){
+	@Override
+	public void timeUpdate(long now){
+		super.timeUpdate(now);
 		
 		//Real Animation
 		//rotateLeftArm((int)leftPoint.getX(), (int)leftPoint.getY());

@@ -62,10 +62,10 @@ public abstract class SlideApplication extends Application3D{
 
 		final int border = 10;
 		
-		final int tolerance = 40;
+		final int tolerance = 16;
 		
 		BufferedImage buffer = cam.getBufferedImage(); 
-		
+
 		int w = buffer.getWidth();
 		int h = buffer.getHeight();
 		
@@ -76,13 +76,12 @@ public abstract class SlideApplication extends Application3D{
 		leftColorFilter.setColor(color);
 		leftColorFilter.setTolerance(tolerance);		
 		leftColorFilter.getSearchStrategy().setBorder(border);
-		
+
 		rightColorFilter = new RightColorFilter(w, h, color);
 		
 		rightColorFilter.setColor(color);
 		rightColorFilter.setTolerance(tolerance);
 		rightColorFilter.getSearchStrategy().setBorder(border);
-		
 		
 		leftPoint = leftColorFilter.filterFirst(buffer, screen);
 		
@@ -109,9 +108,11 @@ public abstract class SlideApplication extends Application3D{
 		mirror = bufferedLayer.getModifiedBuffer();
 		
 		//Now we search for the first pixel with the desired color in the whole screen
-		leftPoint = leftColorFilter.filterFirst(mirror, screen);
+		Component leftComponent = leftColorFilter.filterFirst(mirror, screen);
+		leftPoint.setLocation(leftComponent.getX(), leftComponent.getY());
 		
-		rightPoint = rightColorFilter.filterFirst(mirror, screen);	
+		Component rightComponent = rightColorFilter.filterFirst(mirror, screen);
+		rightPoint.setLocation(rightComponent.getX(), rightComponent.getY());	
 
 	}
 
@@ -190,11 +191,15 @@ public abstract class SlideApplication extends Application3D{
 			return;
 		}
 
-		g.setAlpha(80);
+		g.setAlpha(50);
 
 		//Draw the mirror image
 		g.drawImage(mirror, 0, 0);
 
+		g.setColor(Color.BLACK);
+		g.drawShadow(10, 60, "Right Point ("+rightPoint.getX()+", "+rightPoint.getY()+")");
+		g.drawShadow(10, 80, "Left Point ("+leftPoint.getX()+", "+leftPoint.getY()+")");
+		
 		//Set a Color to our Point
 		g.setColor(Color.CYAN);
 		g.fillCircle((int)leftPoint.getX(), (int)leftPoint.getY(), 10);

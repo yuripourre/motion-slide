@@ -37,6 +37,7 @@ public class MotionSlide extends EtyllicaFrame {
 		
 		//return new LastSlide(w,h);
 		
+		//Resources:		
 		//Math Background: http://www.iwallscreen.com/stock/engineering-graph-sheets-crumpled-notebook-paper.jpg
 		//TV Room: http://home-improvement-review.com/wp-content/uploads/2013/12/living-room-ideas-with-tv-on-wallothers-tv-wall-mounting-ideas-modern-living-room-tv-wall-mount-tnlozkiz.jpg
 	}
