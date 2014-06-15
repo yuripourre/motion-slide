@@ -5,24 +5,20 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
-import br.com.etyllica.animation.AnimationScript;
+import br.com.abby.Application3D;
 import br.com.etyllica.animation.scripts.FadeInAnimation;
-import br.com.etyllica.camera.Camera;
-import br.com.etyllica.camera.CameraV4L4J;
-import br.com.etyllica.context.Application;
+import br.com.etyllica.animation.scripts.SingleIntervalAnimation;
 import br.com.etyllica.core.event.GUIEvent;
 import br.com.etyllica.core.event.PointerEvent;
+import br.com.etyllica.core.graphics.Graphic;
 import br.com.etyllica.core.input.mouse.MouseButton;
-import br.com.etyllica.core.video.Graphic;
 import br.com.etyllica.layer.BufferedLayer;
 import br.com.etyllica.layer.TextLayer;
-import br.com.etyllica.linear.Point2D;
-import br.com.etyllica.motion.features.BoundingComponent;
-import br.com.etyllica.motion.features.Component;
-import br.com.etyllica.motion.filter.color.ColorFilter;
+import br.com.etyllica.motion.camera.Camera;
+import br.com.etyllica.motion.camera.CameraV4L4J;
+import br.com.etyllica.motion.core.features.Component;
 import br.com.etyllica.motion.filter.color.LeftColorFilter;
 import br.com.etyllica.motion.filter.color.RightColorFilter;
-import br.com.luvia.Application3D;
 
 public abstract class SlideApplication extends Application3D{
 
@@ -40,15 +36,15 @@ public abstract class SlideApplication extends Application3D{
 	
 	private BufferedImage mirror = null;
 
-	private Component screen = new BoundingComponent(0, 0, w, h);
+	private Component screen = new Component(0, 0, w, h);
 	
 	private LeftColorFilter leftColorFilter;
 	
 	private RightColorFilter rightColorFilter;
 
-	protected Point2D leftPoint;
+	protected Component leftPoint;
 	
-	protected Point2D rightPoint;
+	protected Component rightPoint;
 
 	@Override
 	public void load() {
@@ -68,21 +64,29 @@ public abstract class SlideApplication extends Application3D{
 		
 		final int tolerance = 40;
 		
-		final int color = new Color(106, 64, 52).getRGB();
+		BufferedImage buffer = cam.getBufferedImage(); 
 		
-		leftColorFilter = new LeftColorFilter();
-		leftColorFilter.setBorder(border);
-		leftColorFilter.setTolerance(tolerance);
+		int w = buffer.getWidth();
+		int h = buffer.getHeight();
+		
+		final Color color = new Color(106, 64, 52);
+		
+		leftColorFilter = new LeftColorFilter(w, h, color);
+		
 		leftColorFilter.setColor(color);
+		leftColorFilter.setTolerance(tolerance);		
+		leftColorFilter.getSearchStrategy().setBorder(border);
 		
-		leftPoint = leftColorFilter.getLastPoint();
-
-		rightColorFilter = new RightColorFilter();
-		rightColorFilter.setBorder(border);
-		rightColorFilter.setTolerance(tolerance);
+		rightColorFilter = new RightColorFilter(w, h, color);
+		
 		rightColorFilter.setColor(color);
+		rightColorFilter.setTolerance(tolerance);
+		rightColorFilter.getSearchStrategy().setBorder(border);
 		
-		rightPoint = rightColorFilter.getLastPoint();
+		
+		leftPoint = leftColorFilter.filterFirst(buffer, screen);
+		
+		rightPoint = rightColorFilter.filterFirst(buffer, screen);
 
 		bufferedLayer = new BufferedLayer(0, 0);
 
@@ -92,7 +96,7 @@ public abstract class SlideApplication extends Application3D{
 	}
 
 	@Override
-	public void timeUpdate(long now){
+	public void timeUpdate(long now) {
 		//Get the Camera image
 		bufferedLayer.setBuffer(cam.getBufferedImage());
 
@@ -117,7 +121,7 @@ public abstract class SlideApplication extends Application3D{
 		//When mouse clicks, the color filter tries to find
 		//the color we are clicking on
 		
-		if(event.onButtonDown(MouseButton.MOUSE_BUTTON_LEFT)){	
+		if(event.isButtonDown(MouseButton.MOUSE_BUTTON_LEFT)){	
 			
 			Color color = new Color(mirror.getRGB((int)event.getX(), (int)event.getY()));
 			
@@ -125,18 +129,18 @@ public abstract class SlideApplication extends Application3D{
 			System.out.println("Green: "+color.getGreen());
 			System.out.println("Blue: "+color.getBlue());
 			
-			leftColorFilter.setColor(mirror.getRGB((int)event.getX(), (int)event.getY()));
+			leftColorFilter.setColor(new Color(mirror.getRGB((int)event.getX(), (int)event.getY())));
 			
-		}else if(event.onButtonDown(MouseButton.MOUSE_BUTTON_RIGHT)){
+		}else if(event.isButtonDown(MouseButton.MOUSE_BUTTON_RIGHT)){
 			
-			rightColorFilter.setColor(mirror.getRGB((int)event.getX(), (int)event.getY()));
+			rightColorFilter.setColor(new Color(mirror.getRGB((int)event.getX(), (int)event.getY())));
 			
 		}
 
 		return GUIEvent.NONE;
 	}
 
-	protected AnimationScript createText(String text){
+	protected SingleIntervalAnimation createText(String text){
 
 		float fontSize = 30;
 

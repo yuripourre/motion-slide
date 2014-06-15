@@ -8,16 +8,16 @@ import java.util.Set;
 
 import slide.SlideApplication;
 import slide.pong.PongApplication;
+import br.com.abby.animation.skeletal.Bone;
+import br.com.abby.linear.Model3D;
+import br.com.abby.loader.MeshLoader;
 import br.com.etyllica.animator.rigging.Armature;
 import br.com.etyllica.core.event.GUIEvent;
 import br.com.etyllica.core.event.KeyEvent;
 import br.com.etyllica.core.event.PointerEvent;
-import br.com.etyllica.core.video.Graphic;
+import br.com.etyllica.core.graphics.Graphic;
 import br.com.etyllica.gui.Spinner;
 import br.com.etyllica.linear.Point2D;
-import br.com.luvia.animation.skeletal.Bone;
-import br.com.luvia.linear.Model3D;
-import br.com.luvia.loader.MeshLoader;
 
 
 public class SkelAnimation extends SlideApplication{

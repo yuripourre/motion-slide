@@ -8,10 +8,11 @@ import java.util.List;
 import slide.geography.GeographySlide;
 import br.com.etyllica.animation.AnimationScript;
 import br.com.etyllica.animation.scripts.FadeOutAnimation;
+import br.com.etyllica.animation.scripts.SingleIntervalAnimation;
 import br.com.etyllica.core.event.GUIEvent;
 import br.com.etyllica.core.event.KeyEvent;
 import br.com.etyllica.core.event.PointerEvent;
-import br.com.etyllica.core.video.Graphic;
+import br.com.etyllica.core.graphics.Graphic;
 import br.com.etyllica.gui.Button;
 import br.com.etyllica.gui.label.TextLabel;
 import br.com.etyllica.layer.ImageLayer;
@@ -50,7 +51,7 @@ public class MathSlide extends SlideApplication{
 		
 		loading = 30;
 				
-		AnimationScript fadeIn = createText("Things like Math");
+		SingleIntervalAnimation fadeIn = createText("Things like Math");
 		
 		FadeOutAnimation fadeOut = new FadeOutAnimation(fadeIn.getTarget(), 4000, 3000);
 		

@@ -1,7 +1,7 @@
 package slide.geography;
 
 import br.com.etyllica.core.Drawable;
-import br.com.etyllica.core.video.Graphic;
+import br.com.etyllica.core.graphics.Graphic;
 import br.com.etyllica.layer.BufferedLayer;
 import br.com.etyllica.layer.TextLayer;
 

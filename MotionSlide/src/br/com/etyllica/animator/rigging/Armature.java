@@ -5,9 +5,9 @@ import java.util.List;
 
 import org.lwjgl.util.vector.Vector3f;
 
-import br.com.luvia.animation.skeletal.Bone;
-import br.com.luvia.animation.skeletal.Joint;
-import br.com.luvia.linear.Model3D;
+import br.com.abby.animation.skeletal.Bone;
+import br.com.abby.animation.skeletal.Joint;
+import br.com.abby.linear.Model3D;
 
 public class Armature {
 
