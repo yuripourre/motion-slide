@@ -11,6 +11,7 @@ import br.com.etyllica.animation.scripts.SingleIntervalAnimation;
 import br.com.etyllica.core.event.GUIEvent;
 import br.com.etyllica.core.event.PointerEvent;
 import br.com.etyllica.core.graphics.Graphic;
+import br.com.etyllica.core.graphics.SVGColor;
 import br.com.etyllica.core.input.mouse.MouseButton;
 import br.com.etyllica.layer.BufferedLayer;
 import br.com.etyllica.layer.TextLayer;
@@ -34,17 +35,17 @@ public abstract class SlideApplication extends Application3D{
 
 	private BufferedLayer bufferedLayer;
 	
-	private BufferedImage mirror = null;
+	protected BufferedImage mirror = null;
 
-	private Component screen = new Component(0, 0, w, h);
+	protected Component screen = new Component(0, 0, w, h);
 	
 	private LeftColorFilter leftColorFilter;
 	
 	private RightColorFilter rightColorFilter;
 
-	protected Component leftPoint;
+	protected Component leftPoint = new Component(0, 0, 1, 1);
 	
-	protected Component rightPoint;
+	protected Component rightPoint = new Component(0, 0, 1, 1);
 
 	@Override
 	public void load() {
@@ -53,23 +54,19 @@ public abstract class SlideApplication extends Application3D{
 		
 		loadingPhrase = "Opening Camera";
 
-		if(sessionMap.get("CAMERA")==null){
-			cam = new CameraV4L4J(0);
-			this.sessionMap.put("CAMERA", cam);
-		}
+		initCamera();
 
+		int w = screen.getW();
+		int h = screen.getH();
+		
 		loadingPhrase = "Setting Filter";
 
 		final int border = 10;
 		
 		final int tolerance = 16;
-		
-		BufferedImage buffer = cam.getBufferedImage(); 
-
-		int w = buffer.getWidth();
-		int h = buffer.getHeight();
-		
-		final Color color = new Color(106, 64, 52);
+				
+		//final Color color = new Color(106, 64, 52);
+		final Color color = SVGColor.ALICE_BLUE;
 		
 		leftColorFilter = new LeftColorFilter(w, h, color);
 		
@@ -82,20 +79,23 @@ public abstract class SlideApplication extends Application3D{
 		rightColorFilter.setColor(color);
 		rightColorFilter.setTolerance(tolerance);
 		rightColorFilter.getSearchStrategy().setBorder(border);
-		
-		leftPoint = leftColorFilter.filterFirst(buffer, screen);
-		
-		rightPoint = rightColorFilter.filterFirst(buffer, screen);
-
-		bufferedLayer = new BufferedLayer(0, 0);
 
 		updateAtFixedRate(5);
 		
-		loading = 5;
+		loading = 100;
+	}
+	
+	private void initCamera() {
+		
+		cam = new CameraV4L4J(0);
+		
+		bufferedLayer = new BufferedLayer(w, h);
+		
 	}
 
 	@Override
-	public void timeUpdate(long now) {
+	public void timeUpdate(long now) {		
+		
 		//Get the Camera image
 		bufferedLayer.setBuffer(cam.getBufferedImage());
 

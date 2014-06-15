@@ -5,5 +5,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/Etyllica"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/E-Motion"/>
 	<classpathentry kind="lib" path="/E-Motion/lib/v4l4j.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/Etyllic Animator"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

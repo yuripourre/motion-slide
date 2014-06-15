@@ -1,56 +1,46 @@
 package slide.capture;
 
 import java.awt.Color;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+
+import org.jgl.GL;
 
 import slide.SlideApplication;
-import slide.pong.PongApplication;
-import br.com.abby.animation.skeletal.Bone;
 import br.com.abby.linear.Model3D;
+import br.com.abby.linear.Point3D;
 import br.com.abby.loader.MeshLoader;
+import br.com.etyllica.animator.control.RigIKControl;
 import br.com.etyllica.animator.rigging.Armature;
 import br.com.etyllica.core.event.GUIEvent;
 import br.com.etyllica.core.event.KeyEvent;
 import br.com.etyllica.core.event.PointerEvent;
 import br.com.etyllica.core.graphics.Graphic;
-import br.com.etyllica.gui.Spinner;
-import br.com.etyllica.linear.Point2D;
 
 
-public class SkelAnimation extends SlideApplication{
+public class SkelAnimation extends SlideApplication {
 
 	public SkelAnimation(int w, int h) {
 		super(w,h);
 	}
-
+	
 	private Model3D model;
+	
+	private boolean hideModel = false;
 
 	private double sceneAngleY = 0;
-	private double sceneAngleX = 0;
-
-	private Spinner<Integer> initSpinner;
-	private Spinner<Integer> finalSpinner;
-
-	private Set<Integer> selectionBucket = new HashSet<Integer>();
-
-	private double zoomFactor = 1.4;
 	
-	private Point2D center;
-	
+	private boolean xray = true;
+
 	private Armature armature;
 
-	//private int mx = 0;
-	//private int my = 0;
+	private RigIKControl leftArmControl;
+
+	private RigIKControl rightArmControl;
+	
+	private boolean rotate = false;
 
 	@Override
 	public void load() {
-
-		super.load();
-				
-		center = new Point2D(w/2, h/2);
+		super.load();		
 
 		loading = 20;
 		enableTextureDefault();
@@ -71,98 +61,181 @@ public class SkelAnimation extends SlideApplication{
 		glLoadIdentity();
 
 		loading = 88;
+		//glTranslatef (0.0f, 0.0f, -5.0f);
 
+		//Load Model (http://thefree3dmodels.com/stuff/characters/male_asian_warrior/14-1-0-4187)
 		model = MeshLoader.getInstance().loadModel("oriental/oriental.obj");
-
+		//model.setScale(3);
+		
 		loading = 90;
+
+		System.out.println("Model has "+model.getVertexes().size()+" vertexes.");
 
 		model.setColor(new Color(0x33,0x33,0x33));
 
-		model.setDrawFaces(true);
-		model.setDrawTexture(true);
-		model.setDrawVertices(false);
-
 		loading = 91;
 
-		model.setY(-1);
-		model.setZ(-5);
+		//model.setX(0.6);
+		model.setY(-1.6);
+		model.setZ(-1.4);
 
 		loading = 95;
 
-		model.setVertexSelection(selectionBucket);
+		model.setDrawFaces(true);
+		model.setDrawTexture(false);
 
 		loading = 96;
-		
+
 		armature = new Armature(model);
 
+		generateRigControls();
+			
+		updateAtFixedRate(200);
+				
 		loading = 100;
 	}
+	
+	private void generateRigControls() {
 
-	public void updateSelection(){
+		//final Vec3D kneeDirection = new Vec3D(1,0,0);
+		
+		//Left Arm Control
+		leftArmControl = new RigIKControl(510, 150, Color.GREEN);
 
-		List<Integer> intList = new ArrayList<Integer>();
+		leftArmControl.setAnchor(new Point3D(344,157, 0));
 
-		for(int i = initSpinner.getValue();i<finalSpinner.getValue();i++){
-			intList.add(i);
-		}
+		leftArmControl.setBoneA(armature.getLeftArm());
 
-		model.getVertexSelection().clear();
-		model.getVertexSelection().addAll(intList);
+		leftArmControl.setBoneB(armature.getLeftForeArm());
+
+		//Right Arm Control
+		rightArmControl = new RigIKControl(210, 160, Color.BLUE);
+
+		rightArmControl.setAnchor(new Point3D(300,157));
+
+		rightArmControl.setBoneA(armature.getRightArm());
+
+		rightArmControl.setBoneB(armature.getRightForeArm());
 
 	}
-
-	private boolean rotate = false;
-
-	float rotationAngle = 0.5f;
-
-	float pivotPrecision = 0.05f;
-	float jointPrecision = 0.01f;
 
 	@Override
 	public GUIEvent updateKeyboard(KeyEvent event) {
 
-		if(event.isKeyDown(KeyEvent.TSK_RIGHT_ARROW)){
-			returnApplication = new PongApplication(w, h);
+		if(event.isKeyDown(KeyEvent.TSK_J)) {
+			model.setX(model.getX()-.1);
+			System.out.println("mX = "+model.getX());
 		}
-
-		if(event.isKeyDown(KeyEvent.TSK_ESPACO)){
-
-			rotate = true;
-			sceneAngleY += 5;
-
-		}else if(event.isKeyUp(KeyEvent.TSK_ESPACO)){
-			rotate = false;
+		else if(event.isKeyDown(KeyEvent.TSK_L)) {
+			model.setX(model.getX()+.1);
+			System.out.println("mX = "+model.getX());
+		}
+		if(event.isKeyDown(KeyEvent.TSK_K)) {
+			model.setY(model.getY()-.1);
+			System.out.println("mY = "+model.getY());
+		}
+		else if(event.isKeyDown(KeyEvent.TSK_I)) {
+			model.setY(model.getY()+.1);
+			System.out.println("mY = "+model.getY());
 		}
 		
+		if(event.isKeyDown(KeyEvent.TSK_U)) {
+			model.setZ(model.getZ()-.1);
+			System.out.println("mZ = "+model.getZ());
+		}
+		else if(event.isKeyDown(KeyEvent.TSK_O)) {
+			model.setZ(model.getZ()+.1);
+			System.out.println("mZ = "+model.getZ());
+		}
+
+		if(event.isKeyDown(KeyEvent.TSK_H)) {
+
+			if(hideModel==false) {
+				hideModel = true;
+			}else{
+				hideModel = false;
+			}
+
+		}else if(event.isKeyDown(KeyEvent.TSK_T)) {
+
+			if(model.isDrawTexture()==false) {
+				model.setDrawTexture(true);
+			}else{
+				model.setDrawTexture(false);
+			}
+
+		}else if(event.isKeyDown(KeyEvent.TSK_F)) {
+
+			if(model.isDrawFaces()==false) {
+				model.setDrawFaces(true);
+			}else{
+				model.setDrawFaces(false);
+			}
+
+		}else if(event.isKeyDown(KeyEvent.TSK_X)) {
+			if(!xray) {
+				xray = true;
+			}else{
+				xray = false;
+			}
+		}
+
+		if(event.isKeyDown(KeyEvent.TSK_ESPACO)) {
+			rotate = true;
+		}
+
+		if(event.isKeyUp(KeyEvent.TSK_ESPACO)) {
+			rotate = false;
+		}
+
 		return GUIEvent.NONE;
 	}
 
 	@Override
 	public void draw(Graphic g) {
 
-		if(rotate){
+		if(rotate) {
 			sceneAngleY+=4;
 		}
 
-
+		//glClear(GL_COLOR_BUFFER_BIT);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		glLoadIdentity();
 
 		glColor3f(1.0f, 1.0f, 1.0f);
 
+		glDisable(GL.GL_DEPTH_TEST);
+		glDisable(GL.GL_TEXTURE_2D);
+		glDisable(GL.GL_CULL_FACE);
+
+
 		//Scene Translate 
 		glTranslated(model.getX(), model.getY(), model.getZ());
 
-		glRotated(sceneAngleX, 1, 0, 0);
 		glRotated(sceneAngleY, 0, 1, 0);
 
-		glScaled(zoomFactor, zoomFactor, zoomFactor);
+		armature.getChestJoint().draw(this);
 
-		model.draw(this);
+		if(!hideModel) {
+			model.draw(this);
+			//model.drawVertexes(this);
+		}
+
+		if(xray) {
+			armature.getChestJoint().draw(this);	
+		}
+
+		//glPopMatrix();
+
+		//Draw IK
 
 		glFlush(g);
 		
+		leftArmControl.draw(g);
+
+		rightArmControl.draw(g);
+				
 		drawCamera(g);
 	}
 		
@@ -171,57 +244,24 @@ public class SkelAnimation extends SlideApplication{
 		
 		super.updateMouse(event);
 		
-		//mx = event.getX();
-		//my = event.getY();
+		//leftArmControl.handleMouse(event);		
+
+		//rightArmControl.handleMouse(event);
 						
 		return GUIEvent.NONE;
 	}
 	
-	private double dinAngle = 0;
-	
-	//public void update(long now){
 	@Override
-	public void timeUpdate(long now){
+	public void timeUpdate(long now) {
+		super.update(now);
 		super.timeUpdate(now);
 		
-		//Real Animation
-		//rotateLeftArm((int)leftPoint.getX(), (int)leftPoint.getY());
-		//rotateRightArm((int)rightPoint.getX(), (int)rightPoint.getY());
+		leftArmControl.setCoordinates(leftPoint.getX(), leftPoint.getY());
+		leftArmControl.calculate();
 		
-		//Mirrored animation
-		rotateLeftArm((int)rightPoint.getX(), (int)rightPoint.getY());
-		rotateRightArm((int)leftPoint.getX(), (int)leftPoint.getY());
-
+		rightArmControl.setCoordinates(rightPoint.getX(), rightPoint.getY());
+		rightArmControl.calculate();
+		
 	}
 	
-	private void rotateLeftArm(int mx, int my){
-		rotateBone(armature.getLeftArm(), mx, my, -90, true);
-	}
-	
-	private void rotateRightArm(int mx, int my){
-		rotateBone(armature.getRightArm(), mx, my, 90, false);
-	}
-		
-	private void rotateBone(Bone bone, int mx, int my, int offsetAngle, boolean inverted){
-		
-		double y = my;
-		
-		if(inverted){
-			y = h-my;
-		}
-		
-		double libertyDegree = 180;
-				
-		double difAngle = offsetAngle+((y)*libertyDegree)/h;
-				
-		if(dinAngle!=difAngle-bone.getAngleZ()){
-			
-			dinAngle = difAngle-bone.getAngleZ();
-
-			bone.rotateZOver(dinAngle);
-					
-		}
-		
-	}
-
 }
