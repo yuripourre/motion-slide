@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import br.com.abby.Application3D;
 import br.com.etyllica.animation.scripts.FadeInAnimation;
@@ -17,6 +18,7 @@ import br.com.etyllica.core.input.mouse.MouseButton;
 import br.com.etyllica.layer.BufferedLayer;
 import br.com.etyllica.layer.GeometricLayer;
 import br.com.etyllica.layer.TextLayer;
+import br.com.etyllica.linear.Point2D;
 import br.com.etyllica.motion.camera.Camera;
 import br.com.etyllica.motion.camera.CameraV4L4J;
 import br.com.etyllica.motion.core.features.Component;
@@ -25,6 +27,7 @@ import br.com.etyllica.motion.filter.TrackingByColorFilter;
 import br.com.etyllica.motion.filter.TrackingByMultipleColorFilter;
 import br.com.etyllica.motion.filter.color.LeftColorFilter;
 import br.com.etyllica.motion.filter.color.RightColorFilter;
+import br.com.etyllica.motion.filter.validation.MinDensityValidation;
 
 public abstract class SlideApplication extends Application3D{
 
@@ -76,19 +79,19 @@ public abstract class SlideApplication extends Application3D{
 
 		bufferedLayer = new BufferedLayer(width, height);
 
-		filter = new TrackingByColorFilter(width, height);
-		filter.setColor(new Color(72,135,166));
-		filter.setTolerance(tolerance);
+		Color filterColor = new Color(72,135,166);
+
+		filter = new TrackingByColorFilter(width, height, filterColor, tolerance);
+		filter.addComponentStrategy(new MinDensityValidation(10));
 
 		loadingPhrase = "Setting Filter";
 		loading = 2;
 
 		final int border = 10;
 
-		final int tolerance = 16;
+		final int tolerance = 30;
 
-		//final Color color = new Color(106, 64, 52);
-		final Color color = SVGColor.ALICE_BLUE;
+		final Color color = new Color(40, 122, 158);
 
 		loading = 3;
 
@@ -140,8 +143,30 @@ public abstract class SlideApplication extends Application3D{
 		rightPoint.setLocation(rightComponent.getX(), rightComponent.getY());
 
 		components = filter.filter(mirror, screen);
-		System.out.println("Found "+components.size());
 
+		calculateCentroid(components);
+
+	}
+
+	private void calculateCentroid(List<Component> components) {
+		
+		if(components.size() == 0) {
+			return;
+		}
+		
+		int centroidX = 0;
+
+		int centroidY = 0;
+
+		for(Component component: components) {
+			centroidX += component.getCenter().getX();
+			centroidY += component.getCenter().getY();
+		}
+
+		centroidX /= components.size();
+		centroidY /= components.size();
+
+		rightPoint.setLocation(centroidX, centroidY);
 	}
 
 	@Override
@@ -195,13 +220,13 @@ public abstract class SlideApplication extends Application3D{
 			}
 
 		}
-		
+
 		if(event.isButtonUp(MouseButton.MOUSE_BUTTON_LEFT)) {
 
 			System.out.println("mx: "+event.getX());
 
 			System.out.println("my: "+event.getY());
-			
+
 		}
 
 		return GUIEvent.NONE;
@@ -251,8 +276,8 @@ public abstract class SlideApplication extends Application3D{
 
 		g.setColor(SVGColor.CORAL);
 
-		for(Component component: components) {
-			g.drawRect(component.getLowestX(), component.getLowestY(), component.getHighestX()-component.getLowestX(), component.getHighestY()-component.getLowestY());
+		for(Component component: new CopyOnWriteArrayList<Component>(components)) {
+			g.drawRect(component.getRectangle());						
 		}
 
 	}

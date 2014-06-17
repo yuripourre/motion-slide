@@ -195,7 +195,6 @@ public class SkelAnimation extends SlideApplication {
 
 	@Override
 	public void draw(Graphic g) {
-		super.draw(g);
 		
 		if(rotate) {
 			sceneAngleY+=4;
@@ -240,6 +239,8 @@ public class SkelAnimation extends SlideApplication {
 		rightArmControl.draw(g);
 				
 		drawCamera(g);
+		
+		super.draw(g);		
 	}
 		
 	@Override
@@ -262,8 +263,8 @@ public class SkelAnimation extends SlideApplication {
 		leftArmControl.setCoordinates(rightPoint.getX(), rightPoint.getY());
 		leftArmControl.calculate();
 		
-		rightArmControl.setCoordinates(leftPoint.getX(), leftPoint.getY());
-		rightArmControl.calculate();
+		//rightArmControl.setCoordinates(leftPoint.getX(), leftPoint.getY());
+		//rightArmControl.calculate();
 		
 	}
 	
