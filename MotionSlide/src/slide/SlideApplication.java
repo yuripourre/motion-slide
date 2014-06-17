@@ -9,6 +9,7 @@ import br.com.abby.Application3D;
 import br.com.etyllica.animation.scripts.FadeInAnimation;
 import br.com.etyllica.animation.scripts.SingleIntervalAnimation;
 import br.com.etyllica.core.event.GUIEvent;
+import br.com.etyllica.core.event.KeyEvent;
 import br.com.etyllica.core.event.PointerEvent;
 import br.com.etyllica.core.graphics.Graphic;
 import br.com.etyllica.core.graphics.SVGColor;
@@ -18,6 +19,9 @@ import br.com.etyllica.layer.TextLayer;
 import br.com.etyllica.motion.camera.Camera;
 import br.com.etyllica.motion.camera.CameraV4L4J;
 import br.com.etyllica.motion.core.features.Component;
+import br.com.etyllica.motion.filter.ColorFilter;
+import br.com.etyllica.motion.filter.TrackingByColorFilter;
+import br.com.etyllica.motion.filter.TrackingByMultipleColorFilter;
 import br.com.etyllica.motion.filter.color.LeftColorFilter;
 import br.com.etyllica.motion.filter.color.RightColorFilter;
 
@@ -34,108 +38,156 @@ public abstract class SlideApplication extends Application3D{
 	private Camera cam;
 
 	private BufferedLayer bufferedLayer;
-	
+
 	protected BufferedImage mirror = null;
 
+	private int tolerance = 18;
+	
+	private TrackingByColorFilter filter;
+
+	private List<Component> components = new ArrayList<Component>();
+
 	protected Component screen = new Component(0, 0, w, h);
-	
+
 	private LeftColorFilter leftColorFilter;
-	
+
 	private RightColorFilter rightColorFilter;
 
 	protected Component leftPoint = new Component(0, 0, 1, 1);
-	
+
 	protected Component rightPoint = new Component(0, 0, 1, 1);
 
 	@Override
 	public void load() {
 
 		glViewport (0, 0, w, h);
+
+		loading = 1;
 		
 		loadingPhrase = "Opening Camera";
-
+		
 		initCamera();
 
-		int w = screen.getW();
-		int h = screen.getH();
+		int width = screen.getW();
+		int height = screen.getH();
+				
+		bufferedLayer = new BufferedLayer(width, height);
+		
+		filter = new TrackingByColorFilter(width, height);
+		filter.setColor(new Color(72,135,166));
+		filter.setTolerance(tolerance);
 		
 		loadingPhrase = "Setting Filter";
+		loading = 2;
 
 		final int border = 10;
-		
+
 		final int tolerance = 16;
-				
+
 		//final Color color = new Color(106, 64, 52);
 		final Color color = SVGColor.ALICE_BLUE;
+
+		loading = 3;
 		
 		leftColorFilter = new LeftColorFilter(w, h, color);
-		
+
 		leftColorFilter.setColor(color);
 		leftColorFilter.setTolerance(tolerance);		
 		leftColorFilter.getSearchStrategy().setBorder(border);
 
 		rightColorFilter = new RightColorFilter(w, h, color);
-		
+
 		rightColorFilter.setColor(color);
 		rightColorFilter.setTolerance(tolerance);
 		rightColorFilter.getSearchStrategy().setBorder(border);
 
 		updateAtFixedRate(5);
-		
-		loading = 100;
+
+		loading = 5;
 	}
-	
+
 	private void initCamera() {
-		
+
 		cam = new CameraV4L4J(0);
-		
-		bufferedLayer = new BufferedLayer(w, h);
-		
+
 	}
 
 	@Override
 	public void timeUpdate(long now) {		
-		
+
 		//Get the Camera image
 		bufferedLayer.setBuffer(cam.getBufferedImage());
 
 		//Normally the camera shows the image flipped, but we want to see something like a mirror
 		//So we flip the image
 		bufferedLayer.flipHorizontal();
-		
+
 		bufferedLayer.resize(w, h);
-				
+
 		mirror = bufferedLayer.getModifiedBuffer();
-		
+
 		//Now we search for the first pixel with the desired color in the whole screen
 		Component leftComponent = leftColorFilter.filterFirst(mirror, screen);
 		leftPoint.setLocation(leftComponent.getX(), leftComponent.getY());
-		
+
 		Component rightComponent = rightColorFilter.filterFirst(mirror, screen);
-		rightPoint.setLocation(rightComponent.getX(), rightComponent.getY());	
+		rightPoint.setLocation(rightComponent.getX(), rightComponent.getY());
+
+		components = filter.filter(mirror, screen);
+		System.out.println("Found "+components.size());
 
 	}
 
+	@Override
+	public GUIEvent updateKeyboard(KeyEvent event) {
+		
+		if(event.isKeyDown(KeyEvent.TSK_EQUALS)) {
+
+			tolerance += 1;
+			filter.setTolerance(tolerance);
+			
+		}
+		
+		if(event.isKeyDown(KeyEvent.TSK_MINUS)) {
+
+			tolerance -= 1;
+			filter.setTolerance(tolerance);
+			
+		}
+		
+		return GUIEvent.NONE;
+				
+	}
+	
 	@Override
 	public GUIEvent updateMouse(PointerEvent event) {
 
 		//When mouse clicks, the color filter tries to find
 		//the color we are clicking on
-		
-		if(event.isButtonDown(MouseButton.MOUSE_BUTTON_LEFT)){	
-			
+
+		if(event.isButtonDown(MouseButton.MOUSE_BUTTON_LEFT)) {
+
 			Color color = new Color(mirror.getRGB((int)event.getX(), (int)event.getY()));
-			
+
 			System.out.println("Red: "+color.getRed());
 			System.out.println("Green: "+color.getGreen());
 			System.out.println("Blue: "+color.getBlue());
 			
 			leftColorFilter.setColor(new Color(mirror.getRGB((int)event.getX(), (int)event.getY())));
-			
+
 		}else if(event.isButtonDown(MouseButton.MOUSE_BUTTON_RIGHT)){
-			
+
 			rightColorFilter.setColor(new Color(mirror.getRGB((int)event.getX(), (int)event.getY())));
+
+		}
+
+		if(event.isButtonUp(MouseButton.MOUSE_BUTTON_LEFT)) {
+
+			System.out.println("mx: "+event.getX());
 			
+			System.out.println("my: "+event.getY());
+			
+			filter.setColor(new Color(mirror.getRGB((int)event.getX(), (int)event.getY())));
 		}
 
 		return GUIEvent.NONE;
@@ -180,7 +232,13 @@ public abstract class SlideApplication extends Application3D{
 	public void draw(Graphic g){
 
 		for(TextLayer text: textList){
-			text.draw(g);	
+			text.draw(g);
+		}
+	
+		g.setColor(SVGColor.CORAL);
+		
+		for(Component component: components) {
+			g.drawRect(component.getLowestX(), component.getLowestY(), component.getHighestX()-component.getLowestX(), component.getHighestY()-component.getLowestY());
 		}
 
 	}
@@ -199,18 +257,22 @@ public abstract class SlideApplication extends Application3D{
 		g.setColor(Color.BLACK);
 		g.drawShadow(10, 60, "Right Point ("+rightPoint.getX()+", "+rightPoint.getY()+")");
 		g.drawShadow(10, 80, "Left Point ("+leftPoint.getX()+", "+leftPoint.getY()+")");
-		
+
 		//Set a Color to our Point
 		g.setColor(Color.CYAN);
 		g.fillCircle((int)leftPoint.getX(), (int)leftPoint.getY(), 10);
-		
+
 		g.setColor(Color.RED);
 		g.fillCircle((int)rightPoint.getX(), (int)rightPoint.getY(), 10);
 
 		g.setAlpha(100);
+		
+		g.setColor(filter.getColor());
+		
+		g.fillRect(0, 50, 40, 30);
 
 	}
-	
-	
+
+
 
 }

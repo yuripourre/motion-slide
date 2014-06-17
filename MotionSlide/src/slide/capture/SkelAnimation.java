@@ -5,6 +5,7 @@ import java.awt.Color;
 import org.jgl.GL;
 
 import slide.SlideApplication;
+import br.com.abby.animation.skeletal.Bone;
 import br.com.abby.linear.Model3D;
 import br.com.abby.linear.Point3D;
 import br.com.abby.loader.MeshLoader;
@@ -52,7 +53,7 @@ public class SkelAnimation extends SlideApplication {
 		glLoadIdentity();
 
 		loading = 55;
-		gluPerspective(60.0, (double)w/(double)h,1.0, 20.0);
+		gluPerspective(60.0, (double)w/(double)h, 0.01, 20.0);
 
 		loading = 67;
 		glMatrixMode(GL_MODELVIEW);
@@ -75,9 +76,9 @@ public class SkelAnimation extends SlideApplication {
 
 		loading = 91;
 
-		//model.setX(0.6);
+		model.setX(-0.4);
 		model.setY(-1.6);
-		model.setZ(-1.4);
+		model.setZ(-0.6);
 
 		loading = 95;
 
@@ -102,20 +103,20 @@ public class SkelAnimation extends SlideApplication {
 		//Left Arm Control
 		leftArmControl = new RigIKControl(510, 150, Color.GREEN);
 
-		leftArmControl.setAnchor(new Point3D(344,157, 0));
+		leftArmControl.setAnchor(new Point3D(373,355, 0));
 
-		leftArmControl.setBoneA(armature.getLeftArm());
+		leftArmControl.setBoneA(armature.getLeftArm(), 185);
 
-		leftArmControl.setBoneB(armature.getLeftForeArm());
+		leftArmControl.setBoneB(armature.getLeftForeArm(), 160);
 
 		//Right Arm Control
 		rightArmControl = new RigIKControl(210, 160, Color.BLUE);
 
-		rightArmControl.setAnchor(new Point3D(300,157));
+		rightArmControl.setAnchor(new Point3D(128,355));
 
-		rightArmControl.setBoneA(armature.getRightArm());
+		rightArmControl.setBoneA(armature.getRightArm(), 190);
 
-		rightArmControl.setBoneB(armature.getRightForeArm());
+		rightArmControl.setBoneB(armature.getRightForeArm(), 180);
 
 	}
 
@@ -193,7 +194,8 @@ public class SkelAnimation extends SlideApplication {
 
 	@Override
 	public void draw(Graphic g) {
-
+		super.draw(g);
+		
 		if(rotate) {
 			sceneAngleY+=4;
 		}
