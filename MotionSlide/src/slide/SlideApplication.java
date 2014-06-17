@@ -15,6 +15,7 @@ import br.com.etyllica.core.graphics.Graphic;
 import br.com.etyllica.core.graphics.SVGColor;
 import br.com.etyllica.core.input.mouse.MouseButton;
 import br.com.etyllica.layer.BufferedLayer;
+import br.com.etyllica.layer.GeometricLayer;
 import br.com.etyllica.layer.TextLayer;
 import br.com.etyllica.motion.camera.Camera;
 import br.com.etyllica.motion.camera.CameraV4L4J;
@@ -42,7 +43,7 @@ public abstract class SlideApplication extends Application3D{
 	protected BufferedImage mirror = null;
 
 	private int tolerance = 18;
-	
+
 	private TrackingByColorFilter filter;
 
 	private List<Component> components = new ArrayList<Component>();
@@ -53,9 +54,11 @@ public abstract class SlideApplication extends Application3D{
 
 	private RightColorFilter rightColorFilter;
 
-	protected Component leftPoint = new Component(0, 0, 1, 1);
+	protected Component leftPoint = new Component(0, 100, 1, 1);
 
-	protected Component rightPoint = new Component(0, 0, 1, 1);
+	protected Component rightPoint = new Component(500, 100, 1, 1);
+
+	private final GeometricLayer colorLayer = new GeometricLayer(0, 100, 40, 30);
 
 	@Override
 	public void load() {
@@ -63,20 +66,20 @@ public abstract class SlideApplication extends Application3D{
 		glViewport (0, 0, w, h);
 
 		loading = 1;
-		
+
 		loadingPhrase = "Opening Camera";
-		
+
 		initCamera();
 
 		int width = screen.getW();
 		int height = screen.getH();
-				
+
 		bufferedLayer = new BufferedLayer(width, height);
-		
+
 		filter = new TrackingByColorFilter(width, height);
 		filter.setColor(new Color(72,135,166));
 		filter.setTolerance(tolerance);
-		
+
 		loadingPhrase = "Setting Filter";
 		loading = 2;
 
@@ -88,7 +91,7 @@ public abstract class SlideApplication extends Application3D{
 		final Color color = SVGColor.ALICE_BLUE;
 
 		loading = 3;
-		
+
 		leftColorFilter = new LeftColorFilter(w, h, color);
 
 		leftColorFilter.setColor(color);
@@ -115,6 +118,9 @@ public abstract class SlideApplication extends Application3D{
 	@Override
 	public void timeUpdate(long now) {		
 
+		if(cam == null) 
+			return;
+
 		//Get the Camera image
 		bufferedLayer.setBuffer(cam.getBufferedImage());
 
@@ -140,54 +146,62 @@ public abstract class SlideApplication extends Application3D{
 
 	@Override
 	public GUIEvent updateKeyboard(KeyEvent event) {
-		
+
 		if(event.isKeyDown(KeyEvent.TSK_EQUALS)) {
 
 			tolerance += 1;
 			filter.setTolerance(tolerance);
-			
+
 		}
-		
+
 		if(event.isKeyDown(KeyEvent.TSK_MINUS)) {
 
 			tolerance -= 1;
 			filter.setTolerance(tolerance);
-			
+
 		}
-		
+
 		return GUIEvent.NONE;
-				
+
 	}
-	
+
 	@Override
 	public GUIEvent updateMouse(PointerEvent event) {
 
 		//When mouse clicks, the color filter tries to find
 		//the color we are clicking on
 
-		if(event.isButtonDown(MouseButton.MOUSE_BUTTON_LEFT)) {
+		if(mirror != null) {
 
-			Color color = new Color(mirror.getRGB((int)event.getX(), (int)event.getY()));
+			if(event.isButtonDown(MouseButton.MOUSE_BUTTON_LEFT)) {
 
-			System.out.println("Red: "+color.getRed());
-			System.out.println("Green: "+color.getGreen());
-			System.out.println("Blue: "+color.getBlue());
-			
-			leftColorFilter.setColor(new Color(mirror.getRGB((int)event.getX(), (int)event.getY())));
+				Color color = new Color(mirror.getRGB((int)event.getX(), (int)event.getY()));
 
-		}else if(event.isButtonDown(MouseButton.MOUSE_BUTTON_RIGHT)){
+				System.out.println("Red: "+color.getRed());
+				System.out.println("Green: "+color.getGreen());
+				System.out.println("Blue: "+color.getBlue());
 
-			rightColorFilter.setColor(new Color(mirror.getRGB((int)event.getX(), (int)event.getY())));
+				leftColorFilter.setColor(new Color(mirror.getRGB((int)event.getX(), (int)event.getY())));
+
+			}else if(event.isButtonDown(MouseButton.MOUSE_BUTTON_RIGHT)){
+
+				rightColorFilter.setColor(new Color(mirror.getRGB((int)event.getX(), (int)event.getY())));
+
+			}
+
+			if(event.isButtonUp(MouseButton.MOUSE_BUTTON_LEFT)) {
+
+				filter.setColor(new Color(mirror.getRGB((int)event.getX(), (int)event.getY())));
+			}
 
 		}
-
+		
 		if(event.isButtonUp(MouseButton.MOUSE_BUTTON_LEFT)) {
 
 			System.out.println("mx: "+event.getX());
-			
+
 			System.out.println("my: "+event.getY());
 			
-			filter.setColor(new Color(mirror.getRGB((int)event.getX(), (int)event.getY())));
 		}
 
 		return GUIEvent.NONE;
@@ -234,9 +248,9 @@ public abstract class SlideApplication extends Application3D{
 		for(TextLayer text: textList){
 			text.draw(g);
 		}
-	
+
 		g.setColor(SVGColor.CORAL);
-		
+
 		for(Component component: components) {
 			g.drawRect(component.getLowestX(), component.getLowestY(), component.getHighestX()-component.getLowestX(), component.getHighestY()-component.getLowestY());
 		}
@@ -245,18 +259,12 @@ public abstract class SlideApplication extends Application3D{
 
 	protected void drawCamera(Graphic g) {
 
-		if(mirror==null){
-			return;
-		}
-
 		g.setAlpha(50);
 
 		//Draw the mirror image
-		g.drawImage(mirror, 0, 0);
-
-		g.setColor(Color.BLACK);
-		g.drawShadow(10, 60, "Right Point ("+rightPoint.getX()+", "+rightPoint.getY()+")");
-		g.drawShadow(10, 80, "Left Point ("+leftPoint.getX()+", "+leftPoint.getY()+")");
+		if(mirror != null){
+			g.drawImage(mirror, 0, 0);
+		}		
 
 		//Set a Color to our Point
 		g.setColor(Color.CYAN);
@@ -266,10 +274,15 @@ public abstract class SlideApplication extends Application3D{
 		g.fillCircle((int)rightPoint.getX(), (int)rightPoint.getY(), 10);
 
 		g.setAlpha(100);
-		
+
 		g.setColor(filter.getColor());
-		
-		g.fillRect(0, 50, 40, 30);
+		g.fillRect(colorLayer);
+
+		g.setColor(Color.WHITE);
+		g.drawShadow(10, 60, "Right Point ("+rightPoint.getX()+", "+rightPoint.getY()+")");
+		g.drawShadow(10, 80, "Left Point ("+leftPoint.getX()+", "+leftPoint.getY()+")");
+
+		g.drawStringShadow(colorLayer.getX(), colorLayer.getY(), colorLayer.getW(), colorLayer.getH(), Integer.toString(tolerance));
 
 	}
 

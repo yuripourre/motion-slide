@@ -83,7 +83,7 @@ public class SkelAnimation extends SlideApplication {
 		loading = 95;
 
 		model.setDrawFaces(true);
-		model.setDrawTexture(false);
+		model.setDrawTexture(true);
 
 		loading = 96;
 
@@ -122,6 +122,7 @@ public class SkelAnimation extends SlideApplication {
 
 	@Override
 	public GUIEvent updateKeyboard(KeyEvent event) {
+		super.updateKeyboard(event);
 
 		if(event.isKeyDown(KeyEvent.TSK_J)) {
 			model.setX(model.getX()-.1);
@@ -258,10 +259,10 @@ public class SkelAnimation extends SlideApplication {
 		super.update(now);
 		super.timeUpdate(now);
 		
-		leftArmControl.setCoordinates(leftPoint.getX(), leftPoint.getY());
+		leftArmControl.setCoordinates(rightPoint.getX(), rightPoint.getY());
 		leftArmControl.calculate();
 		
-		rightArmControl.setCoordinates(rightPoint.getX(), rightPoint.getY());
+		rightArmControl.setCoordinates(leftPoint.getX(), leftPoint.getY());
 		rightArmControl.calculate();
 		
 	}
