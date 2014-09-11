@@ -7,7 +7,7 @@ import org.lwjgl.util.vector.Vector3f;
 
 import br.com.abby.animation.skeletal.Bone;
 import br.com.abby.animation.skeletal.Joint;
-import br.com.abby.linear.Model3D;
+import br.com.abby.vbo.VBO;
 
 public class Armature {
 
@@ -42,9 +42,9 @@ public class Armature {
 	private Bone rightThigh;
 	private Bone rightFoot;
 
-	private Model3D model;
+	private VBO model;
 	
-	public Armature(Model3D model){
+	public Armature(VBO model){
 		super();
 		
 		this.model = model;
@@ -57,105 +57,105 @@ public class Armature {
 		//Neck Bone
 		upperSpine = new Bone(0.23);
 		chestJoint.addBone(upperSpine);
-		upperSpine.rotateZOver(90);
-		upperSpine.rotateXOver(355);
+		upperSpine.rotateZ(90);
+		upperSpine.rotateX(355);
 
 		//Head Bone
 		neck = new Bone(0.15);
 		upperSpine.getEnd().addBone(neck);
-		neck.rotateZOver(90);
-		neck.rotateXOver(12);
+		neck.rotateZ(90);
+		neck.rotateX(12);
 
 		//LeftShoulder bone
 		leftShoulder = new Bone(0.22);
 		chestJoint.addBone(leftShoulder);
-		leftShoulder.rotateZOver(30);
+		leftShoulder.rotateZ(30);
 
 		//LeftArm Bone
 		leftArm = new Bone(0.300);
 		leftShoulder.getEnd().addBone(leftArm);
-		leftArm.rotateZOver(323);
+		leftArm.rotateZ(323);
 
 		//LeftForeArm
 		leftForeArm = new Bone(0.25);
 		leftArm.getEnd().addBone(leftForeArm);
-		leftForeArm.rotateZOver(340);
-		leftForeArm.rotateYOver(334);
+		leftForeArm.rotateZ(340);
+		leftForeArm.rotateY(334);
 
 		//LeftHandBone
 		leftHand = new Bone(0.2);
 		leftForeArm.getEnd().addBone(leftHand);
-		leftHand.rotateZOver(351);
-		leftHand.rotateYOver(342);
+		leftHand.rotateZ(351);
+		leftHand.rotateY(342);
 
 
 		rightShoulder = new Bone(0.22);
 		chestJoint.addBone(rightShoulder);
-		rightShoulder.rotateZOver(150);
+		rightShoulder.rotateZ(150);
 
 		rightArm = new Bone(0.300);
 		rightShoulder.getEnd().addBone(rightArm);
-		rightArm.rotateZOver(217);
+		rightArm.rotateZ(217);
 
 		rightForeArm = new Bone(0.25);
 		rightArm.getEnd().addBone(rightForeArm);
 
-		rightForeArm.rotateZOver(200);
-		rightForeArm.rotateYOver(30);
+		rightForeArm.rotateZ(200);
+		rightForeArm.rotateY(30);
 
 		rightHand = new Bone(0.2);
 		rightForeArm.getEnd().addBone(rightHand);
-		rightHand.rotateZOver(186);
-		rightHand.rotateYOver(20);
+		rightHand.rotateZ(186);
+		rightHand.rotateY(20);
 
 
 		//Lower Spine Bone - Connects chest to hip
 		lowerSpine = new Bone(0.39);
 		chestJoint.addBone(lowerSpine);
-		lowerSpine.rotateZOver(270);
-		lowerSpine.rotateYOver(10);
+		lowerSpine.rotateZ(270);
+		lowerSpine.rotateY(10);
 
 		//Left Leg
 		leftHip = new Bone(0.12);
 		lowerSpine.getEnd().addBone(leftHip);
-		leftHip.rotateZOver(340);
+		leftHip.rotateZ(340);
 
 		leftLeg = new Bone(0.48);
 		leftHip.getEnd().addBone(leftLeg);
-		leftLeg.rotateZOver(275);
-		leftLeg.rotateYOver(370);
-		leftLeg.rotateXOver(359);
+		leftLeg.rotateZ(275);
+		leftLeg.rotateY(370);
+		leftLeg.rotateX(359);
 
 		leftThigh = new Bone(0.4);
 		leftLeg.getEnd().addBone(leftThigh);
-		leftThigh.rotateZOver(270);
-		leftThigh.rotateXOver(5);
+		leftThigh.rotateZ(270);
+		leftThigh.rotateX(5);
 
 		leftFoot = new Bone(0.25);
 		leftThigh.getEnd().addBone(leftFoot);
-		leftFoot.rotateZOver(355);
-		leftFoot.rotateYOver(290);
+		leftFoot.rotateZ(355);
+		leftFoot.rotateY(290);
 
 		//Right Leg
 		rightHip = new Bone(0.12);
 		lowerSpine.getEnd().addBone(rightHip);
-		rightHip.rotateZOver(200);
+		rightHip.rotateZ(200);
 
 		rightLeg = new Bone(0.48);
 		rightHip.getEnd().addBone(rightLeg);
-		rightLeg.rotateZOver(265);
-		rightLeg.rotateYOver(370);
-		rightLeg.rotateXOver(359);
+		rightLeg.rotateZ(265);
+		rightLeg.rotateY(370);
+		rightLeg.rotateX(359);
 
 		rightThigh = new Bone(0.4);
 		rightLeg.getEnd().addBone(rightThigh);
-		rightThigh.rotateZOver(270);
-		rightThigh.rotateXOver(5);
+		rightThigh.rotateZ(270);
+		rightThigh.rotateX(5);
 
 		rightFoot = new Bone(0.25);
 		rightThigh.getEnd().addBone(rightFoot);
-		rightFoot.rotateZOver(355);
-		rightFoot.rotateYOver(250);
+		rightFoot.rotateZ(355);
+		rightFoot.rotateY(250);
 		
 		assignVectors();
 
@@ -225,7 +225,7 @@ public class Armature {
 		for(Integer[] selection : selections){
 
 			for(int i=0;i<selection.length;i++){
-				vectors.add(model.getVertexes().get(selection[i]));
+				vectors.add(model.getVertices().get(selection[i]));
 			}
 			
 		}

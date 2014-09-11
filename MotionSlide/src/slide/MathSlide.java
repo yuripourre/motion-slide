@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import slide.geography.GeographySlide;
-import br.com.etyllica.animation.AnimationScript;
+import br.com.etyllica.animation.scripts.AnimationScript;
 import br.com.etyllica.animation.scripts.FadeOutAnimation;
 import br.com.etyllica.animation.scripts.SingleIntervalAnimation;
 import br.com.etyllica.core.event.GUIEvent;

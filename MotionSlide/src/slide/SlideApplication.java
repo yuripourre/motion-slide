@@ -18,13 +18,10 @@ import br.com.etyllica.core.input.mouse.MouseButton;
 import br.com.etyllica.layer.BufferedLayer;
 import br.com.etyllica.layer.GeometricLayer;
 import br.com.etyllica.layer.TextLayer;
-import br.com.etyllica.linear.Point2D;
 import br.com.etyllica.motion.camera.Camera;
 import br.com.etyllica.motion.camera.CameraV4L4J;
 import br.com.etyllica.motion.core.features.Component;
 import br.com.etyllica.motion.filter.ColorFilter;
-import br.com.etyllica.motion.filter.TrackingByColorFilter;
-import br.com.etyllica.motion.filter.TrackingByMultipleColorFilter;
 import br.com.etyllica.motion.filter.color.LeftColorFilter;
 import br.com.etyllica.motion.filter.color.RightColorFilter;
 import br.com.etyllica.motion.filter.validation.MinDensityValidation;
@@ -47,7 +44,7 @@ public abstract class SlideApplication extends Application3D{
 
 	private int tolerance = 18;
 
-	private TrackingByColorFilter filter;
+	private ColorFilter filter;
 
 	private List<Component> components = new ArrayList<Component>();
 
@@ -81,7 +78,7 @@ public abstract class SlideApplication extends Application3D{
 
 		Color filterColor = new Color(72,135,166);
 
-		filter = new TrackingByColorFilter(width, height, filterColor, tolerance);
+		filter = new ColorFilter(width, height, filterColor, tolerance);
 		filter.addComponentStrategy(new MinDensityValidation(10));
 
 		loadingPhrase = "Setting Filter";
@@ -133,7 +130,7 @@ public abstract class SlideApplication extends Application3D{
 
 		bufferedLayer.resize(w, h);
 
-		mirror = bufferedLayer.getModifiedBuffer();
+		mirror = bufferedLayer.getBuffer();
 
 		//Now we search for the first pixel with the desired color in the whole screen
 		Component leftComponent = leftColorFilter.filterFirst(mirror, screen);

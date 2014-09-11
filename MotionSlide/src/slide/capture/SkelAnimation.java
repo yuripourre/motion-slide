@@ -5,10 +5,8 @@ import java.awt.Color;
 import org.jgl.GL;
 
 import slide.SlideApplication;
-import br.com.abby.animation.skeletal.Bone;
 import br.com.abby.linear.Model3D;
 import br.com.abby.linear.Point3D;
-import br.com.abby.loader.MeshLoader;
 import br.com.etyllica.animator.control.RigIKControl;
 import br.com.etyllica.animator.rigging.Armature;
 import br.com.etyllica.core.event.GUIEvent;
@@ -65,12 +63,12 @@ public class SkelAnimation extends SlideApplication {
 		//glTranslatef (0.0f, 0.0f, -5.0f);
 
 		//Load Model (http://thefree3dmodels.com/stuff/characters/male_asian_warrior/14-1-0-4187)
-		model = MeshLoader.getInstance().loadModel("oriental/oriental.obj");
+		model = new Model3D("oriental/oriental.obj");
 		//model.setScale(3);
 		
 		loading = 90;
 
-		System.out.println("Model has "+model.getVertexes().size()+" vertexes.");
+		System.out.println("Model has "+model.getVbo().getVertices().size()+" vertexes.");
 
 		model.setColor(new Color(0x33,0x33,0x33));
 
@@ -87,7 +85,7 @@ public class SkelAnimation extends SlideApplication {
 
 		loading = 96;
 
-		armature = new Armature(model);
+		armature = new Armature(model.getVbo());
 
 		generateRigControls();
 			
